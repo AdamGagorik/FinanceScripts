@@ -74,7 +74,7 @@ class HoldingsScraper(scraper.base.Scraper):
         Returns:
             The holding objects.
         """
-        return [Holding.safe_init(**account).fillna(self.rules) for account in self.data]
+        return [Holding.safe_init(**holding).fillna(self.rules) for holding in self.data]
 
     @property
     @functools.lru_cache(maxsize=1)
