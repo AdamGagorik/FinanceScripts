@@ -3,6 +3,11 @@ Personal Capital Scraper
 
 This is a script based on the [personalcapital] module by [haochi].
 
+The aim is to...
+
+  1) download daily holdings automatically
+  2) download historical data
+
 Setup
 =====
 
@@ -23,7 +28,8 @@ PC_PASSWORD=[Your PC Password]
 PC_USERNAME=[Your PC Username]
 ```
 
-These variables may be set in a filed called `.env` in the run directory.
+- These variables may be set in a filed called `.env` in the run directory.
+- Please note that the script will pause for 2-factor authentication on the 1st run.
 
 Examples
 ========
@@ -33,18 +39,19 @@ import scraper.handler
 import scraper.apis
 
 
-handler = scraper.handler.PCHandler()
-
-# fetch all account objects
-accounts = scraper.apis.AccountsScraper(handler).reload()
-for account in accounts.objects:
-    print(account)
-
-
-# fetch all holding objects
-holdings = scraper.apis.HoldingsScraper(handler).reload()
-for holding in holdings.objects:
-    print(holding)
+if __name__ == '__main__':
+    # create API handler instance
+    handler = scraper.handler.PCHandler()
+    
+    # fetch all account objects
+    accounts = scraper.apis.AccountsScraper(handler).reload()
+    for account in accounts.objects:
+        print(account)
+    
+    # fetch all holding objects
+    holdings = scraper.apis.HoldingsScraper(handler).reload()
+    for holding in holdings.objects:
+        print(holding)
 ```
 
 Apps
@@ -63,8 +70,10 @@ Filling Logic
 =============
 
 Fill in missing values by creating YAML based rule files in the run directory.
-The rules are a list of`where` and `value` mappings.
-For example, if all items from the `where` mapping match an instance's attributes, the items from the `value` mapping will be set on the instance.
+
+- The rules are a list of`where` and `value` mappings.
+    - If all items from the `where` mapping match an instance's attributes...
+        - The items from the `value` mapping will be set on the instance.
 
 ### fillna-holdings.yaml
 
