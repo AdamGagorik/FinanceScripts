@@ -1,0 +1,3 @@
+[submodule "external/personalcapital"]
+	path = external/personalcapital
+	url = https://github.com/haochi/personalcapital.git
