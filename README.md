@@ -11,7 +11,7 @@ The aim is to...
 Setup
 =====
 
-* Create a conda environment.
+Create a conda environment.
 
 ```bash
 conda env create -f environment.yml
