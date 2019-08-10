@@ -2,11 +2,9 @@
 Handle the API to fetch account data.
 """
 import dataclasses
-import functools
-import typing
+import requests
 
 
-import scraper.handler
 import scraper.base
 
 
@@ -22,31 +20,21 @@ class AccountsScraper(scraper.base.Scraper):
     """
     Scrape the accounts data from personal capital.
     """
-    def __init__(self, handler: scraper.handler.PCHandler):
-        """
-        Parameters:
-            handler: The personal capital api handler instance.
-        """
-        super().__init__(handler, f'{handler.config.dt:%Y-%m-%d}-accounts.yaml')
+    __reload_yaml__: str = '{dt:%Y-%m-%d}-accounts.yaml'
+    __fillna_yaml__: str = 'fillna-accounts.yaml'
+    __store_class__: type = Account
 
-    def fetch(self) -> dict:
+    def fetch(self) -> list:
         """
         The logic of the API call.
 
         Returns:
             The json dictionary.
         """
-        data: dict = self.handler.pc.fetch('/newaccount/getAccounts2').json()
-        data: dict = data.get('spData', {}).get('accounts', [])
+        payload: dict = {}
+        data: requests.Response = self.handler.pc.fetch('/newaccount/getAccounts2', data=payload)
+
+        data: dict = data.json()
+        data: list = data.get('spData', {}).get('accounts', [])
+
         return data
-
-    @property
-    @functools.lru_cache(maxsize=1)
-    def objects(self) -> typing.List[Account]:
-        """
-        Get the Account object instances.
-
-        Returns:
-            A list of account objects.
-        """
-        return [Account.safe_init(**account) for account in self.data]

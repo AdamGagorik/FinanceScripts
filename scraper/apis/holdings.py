@@ -1,19 +1,11 @@
 """
 Handle the API to fetch account data.
 """
-import pandas as pd
 import dataclasses
-import functools
-import typing
-import yaml
-import os
+import requests
 
 
-import scraper.handler
 import scraper.base
-
-
-from scraper.apis.accounts import Account
 
 
 @dataclasses.dataclass()
@@ -34,58 +26,21 @@ class HoldingsScraper(scraper.base.Scraper):
     """
     Scrape the holdings data from personal capital.
     """
-    def __init__(self, handler: scraper.handler.PCHandler):
-        """
-        Parameters:
-            handler: The personal capital api handler instance.
-        """
-        super().__init__(handler, f'{handler.config.dt:%Y-%m-%d}-holdings.yaml')
+    __reload_yaml__: str = '{dt:%Y-%m-%d}-holdings.yaml'
+    __fillna_yaml__: str = 'fillna-holdings.yaml'
+    __store_class__: type = Holding
 
-    def fetch(self, accounts: typing.List[Account]) -> dict:
+    def fetch(self) -> list:
         """
         The logic of the API call.
 
         Returns:
             THe json dictionary.
         """
-        data: dict = {'userAccountIds': [account.userAccountId for account in accounts]}
-        data: dict = self.handler.pc.fetch('/invest/getHoldings', data=data).json()
-        data: dict = data.get('spData', {}).get('holdings', [])
+        payload: dict = {}
+        data: requests.Response = self.handler.pc.fetch('/invest/getHoldings', data=payload)
+
+        data: dict = data.json()
+        data: list = data.get('spData', {}).get('holdings', [])
+
         return data
-
-    @property
-    @functools.lru_cache(maxsize=1)
-    def rules(self):
-        """
-        Get the list of fillna rules from the yaml file.
-        """
-        path: str = os.path.join(self.handler.config.workdir, 'fillna-holdings.yaml')
-        if os.path.exists(path):
-            return yaml.load(open(path, 'r'), yaml.SafeLoader).get('rules', [])
-        else:
-            return []
-
-    @property
-    @functools.lru_cache(maxsize=1)
-    def objects(self) -> typing.List[Holding]:
-        """
-        Get the Holding object instances.
-
-        Returns:
-            The holding objects.
-        """
-        return [Holding.safe_init(**holding).fillna(self.rules) for holding in self.data]
-
-    @property
-    @functools.lru_cache(maxsize=1)
-    def frame(self) -> pd.DataFrame:
-        """
-        Get the holding objects as a dataframe.
-
-        Returns:
-            The holdings dataframe.
-        """
-        _frame: pd.DataFrame = pd.DataFrame(dataclasses.asdict(h) for h in self.objects)
-        _frame: pd.DataFrame = _frame.sort_values(by='accountName')
-        _frame: pd.DataFrame = _frame.reset_index(drop=True)
-        return _frame

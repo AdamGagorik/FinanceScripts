@@ -29,7 +29,7 @@ def main(force=False):
     accounts = scraper.apis.AccountsScraper(handler).reload(force=force)
 
     # fetch all holding objects
-    holdings = scraper.apis.HoldingsScraper(handler).reload(force=force, accounts=accounts.objects)
+    holdings = scraper.apis.HoldingsScraper(handler).reload(force=force)
     holdings.frame.to_csv(handler.config.getpath('{dt:%Y-%m-%d}-holdings.csv'), index=False)
     logging.debug('holdings\n%s', holdings.frame)
 
