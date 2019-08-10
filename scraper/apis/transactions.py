@@ -53,7 +53,7 @@ class TransactionsScraper(scraper.base.Scraper):
             The json dictionary.
         """
         payload: dict = {
-            'startDate': self.t0.strftime('%Y-%m-%d'), 'endDate': self.t0.strftime('%Y-%m-%d'),
+            'startDate': self.t0.strftime('%Y-%m-%d'), 'endDate': self.t1.strftime('%Y-%m-%d'),
             'page': 0, 'rows_per_page': 4096, 'component': 'DATAGRID',
             'sort_cols': 'transactionTime', 'sort_rev': 'true',
         }
