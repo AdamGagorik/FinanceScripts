@@ -49,17 +49,17 @@ if __name__ == '__main__':
     handler = scraper.handler.PCHandler()
     
     # fetch all account objects
-    accounts = scraper.apis.AccountsScraper(handler).reload()
+    accounts = scraper.apis.AccountsScraper(handler)
     for account in accounts:
         print(account)
     
     # fetch all holding objects
-    holdings = scraper.apis.HoldingsScraper(handler).reload()
+    holdings = scraper.apis.HoldingsScraper(handler)
     for holding in holdings:
         print(holding)
 
     # fetch all transaction objects
-    transactions = scraper.apis.TransactionsScraper(handler, t0=datetime.datetime.now(), dt=1).reload()
+    transactions = scraper.apis.TransactionsScraper(handler, t0=datetime.datetime.now(), dt=1)
     for transaction in transactions:
         print(transaction)
 
