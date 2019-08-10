@@ -7,6 +7,8 @@ import functools
 import datetime
 import requests
 import typing
+import yaml
+import os
 
 
 import scraper.handler
@@ -72,6 +74,18 @@ class TransactionsScraper(scraper.base.Scraper):
 
     @property
     @functools.lru_cache(maxsize=1)
+    def rules(self):
+        """
+        Get the list of fillna rules from the yaml file.
+        """
+        path: str = os.path.join(self.handler.config.workdir, 'fillna-transactions.yaml')
+        if os.path.exists(path):
+            return yaml.load(open(path, 'r'), yaml.SafeLoader).get('rules', [])
+        else:
+            return []
+
+    @property
+    @functools.lru_cache(maxsize=1)
     def objects(self) -> typing.List[Transaction]:
         """
         Get the Transaction object instances.
@@ -79,7 +93,7 @@ class TransactionsScraper(scraper.base.Scraper):
         Returns:
             A list of transaction objects.
         """
-        return [Transaction.safe_init(**transaction) for transaction in self.data]
+        return [Transaction.safe_init(**transaction).fillna(self.rules) for transaction in self.data]
 
     @property
     @functools.lru_cache(maxsize=1)
@@ -90,7 +104,7 @@ class TransactionsScraper(scraper.base.Scraper):
         Returns:
             The transactions dataframe.
         """
-        _frame: pd.DataFrame = pd.DataFrame(dataclasses.asdict(h) for h in self.objects)
+        _frame: pd.DataFrame = pd.DataFrame(dataclasses.asdict(t) for t in self.objects)
         _frame: pd.DataFrame = _frame.sort_values(by=['accountName', 'transactionDate'])
         _frame: pd.DataFrame = _frame.reset_index(drop=True)
         return _frame
