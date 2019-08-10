@@ -1,7 +1,6 @@
 """
 A script to save a holdings CSV for the current date.
 """
-import pandas as pd
 import argparse
 import logging
 
