@@ -35,6 +35,10 @@ Examples
 ========
 
 ```python
+import pandas as pd
+import dataclasses
+
+
 import scraper.handler
 import scraper.apis
 
@@ -53,9 +57,14 @@ if __name__ == '__main__':
     for holding in holdings.objects:
         print(holding)
 
+    # fetch all transaction objects
     transactions = scraper.apis.TransactionsScraper(handler).reload()
     for transaction in transactions.objects:
         print(transaction)
+
+    # create a dataframe from any dataclass based object
+    hframe: pd.DataFrame = pd.DataFrame(dataclasses.asdict(h) for h in holdings.objects)
+    tframe: pd.DataFrame = pd.DataFrame(dataclasses.asdict(t) for t in transactions.objects)
 ```
 
 Apps
