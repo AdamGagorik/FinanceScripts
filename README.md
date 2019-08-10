@@ -52,6 +52,10 @@ if __name__ == '__main__':
     holdings = scraper.apis.HoldingsScraper(handler).reload()
     for holding in holdings.objects:
         print(holding)
+
+    transactions = scraper.apis.TransactionsScraper(handler).reload()
+    for transaction in transactions.objects:
+        print(transaction)
 ```
 
 Apps
@@ -62,7 +66,6 @@ Apps
 This app will save a CSV file for the current date with all investment holdings.
 
 ```
-# save holdings CSV as of today
 cd ./workspace
 conda activate PersonalCapitalScraper
 python -m scraper.apps.holdings
@@ -73,7 +76,6 @@ python -m scraper.apps.holdings
 This app will save a CSV file for transactions in the time period for all accounts.
 
 ```
-# save holdings CSV as of today
 cd ./workspace
 conda activate PersonalCapitalScraper
 python -m scraper.apps.transactions --t0 2019-08-10 --dt 1
@@ -99,6 +101,10 @@ rules:
       accountName: 'RothIRA'
       ticker: 'VTSAX'
 ```
+
+### fillna-transactions.yaml
+
+The same logic is used as for fillna-holdings.
 
 [haochi]: https://github.com/haochi
 [personalcapital]: https://github.com/haochi/personalcapital
