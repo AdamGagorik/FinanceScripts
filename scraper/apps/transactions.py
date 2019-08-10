@@ -6,6 +6,7 @@ import argparse
 import logging
 
 
+import scraper.apps.common
 import scraper.handler
 import scraper.config
 import scraper.apis
@@ -42,13 +43,4 @@ def main(force: bool, t0: datetime.datetime, dt: int):
 
 
 if __name__ == '__main__':
-    # noinspection PyBroadException
-    try:
-        scraper.config.logging()
-        scraper.config.pandas()
-        opts = get_arguments()
-        main(opts.force, opts.t0, opts.dt)
-    except Exception:
-        logging.exception('caught unhandled exception!')
-        exit(-1)
-    exit(0)
+    scraper.apps.common.run(main, get_arguments)
