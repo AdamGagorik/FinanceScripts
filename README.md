@@ -57,13 +57,26 @@ if __name__ == '__main__':
 Apps
 ====
 
+### python -m scraper.apps.holdings
+
 This app will save a CSV file for the current date with all investment holdings.
 
 ```
 # save holdings CSV as of today
 cd ./workspace
-activate PersonalCapitalScraper
+conda activate PersonalCapitalScraper
 python -m scraper.apps.holdings
+```
+
+### python -m scraper.apps.transactions
+
+This app will save a CSV file for transactions in the time period for all accounts.
+
+```
+# save holdings CSV as of today
+cd ./workspace
+conda activate PersonalCapitalScraper
+python -m scraper.apps.transactions --t0 2019-08-10 --dt 1
 ```
 
 Filling Logic
