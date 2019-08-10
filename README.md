@@ -37,6 +37,7 @@ Examples
 ```python
 import pandas as pd
 import dataclasses
+import datetime
 
 
 import scraper.handler
@@ -49,22 +50,22 @@ if __name__ == '__main__':
     
     # fetch all account objects
     accounts = scraper.apis.AccountsScraper(handler).reload()
-    for account in accounts.objects:
+    for account in accounts:
         print(account)
     
     # fetch all holding objects
     holdings = scraper.apis.HoldingsScraper(handler).reload()
-    for holding in holdings.objects:
+    for holding in holdings:
         print(holding)
 
     # fetch all transaction objects
-    transactions = scraper.apis.TransactionsScraper(handler).reload()
-    for transaction in transactions.objects:
+    transactions = scraper.apis.TransactionsScraper(handler, t0=datetime.datetime.now(), dt=1).reload()
+    for transaction in transactions:
         print(transaction)
 
     # create a dataframe from any dataclass based object
-    hframe: pd.DataFrame = pd.DataFrame(dataclasses.asdict(h) for h in holdings.objects)
-    tframe: pd.DataFrame = pd.DataFrame(dataclasses.asdict(t) for t in transactions.objects)
+    hframe: pd.DataFrame = pd.DataFrame(dataclasses.asdict(h) for h in holdings)
+    tframe: pd.DataFrame = pd.DataFrame(dataclasses.asdict(t) for t in transactions)
 ```
 
 Apps
