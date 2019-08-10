@@ -6,7 +6,6 @@ import datetime
 import requests
 
 
-import scraper.handler
 import scraper.base
 
 
