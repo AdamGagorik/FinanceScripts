@@ -178,4 +178,7 @@ class Scraper:
         Returns:
             The transactions dataframe.
         """
-        return pd.DataFrame(dataclasses.asdict(obj) for obj in self.objects)
+        frame_: pd.DataFrame = pd.DataFrame(dataclasses.asdict(obj) for obj in self.objects)
+        frame_: pd.DataFrame = frame_.sort_values(by=[f.name for f in dataclasses.fields(self.__store_class__)])
+        frame_: pd.DataFrame = frame_.reset_index(drop=True)
+        return frame_
