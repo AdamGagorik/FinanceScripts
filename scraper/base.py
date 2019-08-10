@@ -91,11 +91,11 @@ class Scraper:
     __fillna_yaml__: str = 'fillna-scraper.yaml'
     __store_class__: ObjectMapping = ObjectMapping
 
-    def __init__(self, handler: PCHandler, store: str = 'scraper.yaml'):
+    def __init__(self, handler: PCHandler, force: bool = False):
         """
         Parameters:
             handler: The personal capital api handler instance.
-            store: The basename stub for the storage file.
+            force: Use the API even if the store exists?
         """
         #: The personal capital api handler
         self.handler: PCHandler = handler
@@ -103,28 +103,36 @@ class Scraper:
         self.store: str = os.path.join(handler.config.workdir, self.__reload_yaml__)
         self.store: str = self.store.format(dt=handler.config.dt, self=self)
         #: The data that was fetched as json from the API call
-        self.data: dict = {}
+        self._data: typing.Union[list, None] = None
+        self.force: bool = force
 
-    def fetch(self, **kwargs) -> list:
+    @property
+    def data(self) -> list:
+        """
+        Get the list of JSON objects data.
+        """
+        if self._data is None:
+            self.reload()
+
+        return self._data
+
+    def fetch(self) -> list:
         """
         The logic of the API call.
         """
         raise NotImplementedError
 
-    def reload(self, force: bool = False, **kwargs) -> 'Scraper':
+    def reload(self) -> 'Scraper':
         """
         Download the data from the PC API or reload it from disk.
-
-        Parameters:
-            force: Use the API even if the store exists?
         """
-        if force or not os.path.exists(self.store):
-            self.data = self.fetch(**kwargs)
+        if self.force or not os.path.exists(self.store):
+            self._data = self.fetch()
             with open(self.store, 'w') as stream:
                 yaml.dump(self.data, stream)
         else:
             with open(self.store, 'r') as stream:
-                self.data = yaml.load(stream, yaml.SafeLoader)
+                self._data = yaml.load(stream, yaml.SafeLoader)
 
         return self
 

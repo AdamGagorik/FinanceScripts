@@ -36,7 +36,7 @@ def main(force: bool, t0: datetime.datetime, dt: int):
     handler = scraper.handler.PCHandler()
 
     # fetch all holding objects
-    transactions = scraper.apis.TransactionsScraper(handler, t0=t0, dt=dt).reload(force=force)
+    transactions = scraper.apis.TransactionsScraper(handler, force=force, t0=t0, dt=dt)
     transactions.frame.to_csv(handler.config.getpath(f'{t0:%Y-%m-%d}-{dt:03d}-transactions.csv'), index=False)
     logging.debug('transactions\n%s', transactions.frame)
 

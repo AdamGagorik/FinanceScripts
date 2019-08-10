@@ -34,15 +34,16 @@ class TransactionsScraper(scraper.base.Scraper):
     __fillna_yaml__: str = 'fillna-transactions.yaml'
     __store_class__: type = Transaction
 
-    def __init__(self, handler: scraper.handler.PCHandler, t0: datetime.datetime, dt: int):
+    def __init__(self, *args, t0: datetime.datetime, dt: int, **kwargs):
         """
         Parameters:
-            handler: The personal capital api handler instance.
+            t0: The start time to fetch transactions.
+            dt: The number of days after the start time.
         """
         self.dt: int = dt
         self.t0: datetime.datetime = t0
         self.t1: datetime.datetime = t0 + datetime.timedelta(days=dt)
-        super().__init__(handler)
+        super().__init__(*args, **kwargs)
 
     def fetch(self) -> list:
         """
