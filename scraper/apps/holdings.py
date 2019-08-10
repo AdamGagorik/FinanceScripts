@@ -7,6 +7,7 @@ import logging
 
 
 import scraper.handler
+import scraper.config
 import scraper.apis
 
 
@@ -31,17 +32,14 @@ def main(force=False):
     # fetch all holding objects
     holdings = scraper.apis.HoldingsScraper(handler).reload(force=force, accounts=accounts.objects)
     holdings.frame.to_csv(handler.config.getpath('{dt:%Y-%m-%d}-holdings.csv'), index=False)
-    print(holdings.frame)
+    logging.debug('holdings\n%s', holdings.frame)
 
 
 if __name__ == '__main__':
     # noinspection PyBroadException
     try:
-        logging.basicConfig(level=logging.DEBUG, format='%(message)s')
-        pd.set_option('display.max_colwidth', 1024)
-        pd.set_option('display.max_columns', 1024)
-        pd.set_option('display.max_rows', 1024)
-        pd.set_option('display.width', 4096)
+        scraper.config.logging()
+        scraper.config.pandas()
         opts = get_arguments()
         main(force=opts.force)
     except Exception:
