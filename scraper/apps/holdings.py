@@ -25,9 +25,6 @@ def main(force=False):
     """
     handler = scraper.handler.PCHandler()
 
-    # fetch all account objects
-    accounts = scraper.apis.AccountsScraper(handler, force=force)
-
     # fetch all holding objects
     holdings = scraper.apis.HoldingsScraper(handler, force=force)
     holdings.frame.to_csv(handler.config.getpath('{dt:%Y-%m-%d}-holdings.csv'), index=False)
