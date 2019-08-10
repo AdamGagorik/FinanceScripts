@@ -85,4 +85,7 @@ class HoldingsScraper(scraper.base.Scraper):
         Returns:
             The holdings dataframe.
         """
-        return pd.DataFrame(dataclasses.asdict(h) for h in self.objects).sort_values(by='accountName')
+        _frame: pd.DataFrame = pd.DataFrame(dataclasses.asdict(h) for h in self.objects)
+        _frame: pd.DataFrame = _frame.sort_values(by='accountName')
+        _frame: pd.DataFrame = _frame.reset_index(drop=True)
+        return _frame
