@@ -15,16 +15,16 @@ class Scraper:
     """
     A base class that can preform API calls or reload data using a PC handler.
     """
-    def __init__(self, handler: PCHandler, stub: str = 'scraper'):
+    def __init__(self, handler: PCHandler, store: str = 'scraper.yaml'):
         """
         Parameters:
             handler: The personal capital api handler instance.
-            stub: The basename stub for the storage file.
+            store: The basename stub for the storage file.
         """
         #: The personal capital api handler
         self.handler: PCHandler = handler
         #: The name of the file to store the API results in
-        self.store: str = f'{self.handler.config.dt:%Y-%m-%d}-{stub}.yaml'
+        self.store: str = store
         #: The data that was fetched as json from the API call
         self.data: dict = {}
 

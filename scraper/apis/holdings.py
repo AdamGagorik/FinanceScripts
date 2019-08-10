@@ -39,7 +39,7 @@ class HoldingsScraper(scraper.base.Scraper):
         Parameters:
             handler: The personal capital api handler instance.
         """
-        super().__init__(handler, 'holdings')
+        super().__init__(handler, f'{handler.config.dt:%Y-%m-%d}-holdings.yaml')
 
     def fetch(self, accounts: typing.List[Account]) -> dict:
         """

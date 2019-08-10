@@ -27,7 +27,7 @@ class AccountsScraper(scraper.base.Scraper):
         Parameters:
             handler: The personal capital api handler instance.
         """
-        super().__init__(handler, 'accounts')
+        super().__init__(handler, f'{handler.config.dt:%Y-%m-%d}-accounts.yaml')
 
     def fetch(self) -> dict:
         """

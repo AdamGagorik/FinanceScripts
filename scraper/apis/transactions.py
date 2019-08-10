@@ -35,35 +35,27 @@ class TransactionsScraper(scraper.base.Scraper):
     """
     Scrape the transactions data from personal capital.
     """
-    def __init__(self, handler: scraper.handler.PCHandler):
+    def __init__(self, handler: scraper.handler.PCHandler, t0: datetime.datetime, dt: int):
         """
         Parameters:
             handler: The personal capital api handler instance.
         """
-        super().__init__(handler, 'transactions')
+        self.t0: datetime.datetime = t0
+        self.t1: datetime.datetime = t0 + datetime.timedelta(days=dt)
+        super().__init__(handler, f'{self.t0:%Y-%m-%d}-{dt:03d}-transactions.yaml')
 
-    def fetch(self, t0: datetime.datetime = None, dt: datetime.timedelta = None) -> dict:
+    def fetch(self) -> dict:
         """
         The logic of the API call.
 
         Returns:
             The json dictionary.
         """
-        if t0 is None:
-            t0: datetime.datetime = self.handler.config.dt
-
-        t0: datetime.datetime = t0.replace(hour=0, minute=0, second=0, microsecond=0, tzinfo=datetime.timezone.utc)
-
-        if dt is None:
-            dt: datetime.timedelta = datetime.timedelta(days=1)
-
-        t1: datetime.datetime = t0 + dt
-
-        t0: str = t0.strftime('%Y-%m-%d')
-        t1: str = t1.strftime('%Y-%m-%d')
+        t0: str = self.t0.strftime('%Y-%m-%d')
+        t1: str = self.t1.strftime('%Y-%m-%d')
 
         payload: dict = {
-            'startDate': t0, 'endDate': t1, 'page': 0, 'rows_per_page': 100,
+            'startDate': t0, 'endDate': t1, 'page': 0, 'rows_per_page': 4096,
             'sort_cols': 'transactionTime', 'sort_rev': 'true',
             'component': 'DATAGRID'
         }
