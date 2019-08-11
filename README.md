@@ -58,13 +58,19 @@ if __name__ == '__main__':
     for holding in holdings:
         print(holding)
 
+    # fetch all history objects
+    histories = scraper.apis.HistoriesScraper(handler, t0=datetime.datetime.now(), dt=1)
+    for history in histories:
+        print(history)
+
     # fetch all transaction objects
     transactions = scraper.apis.TransactionsScraper(handler, t0=datetime.datetime.now(), dt=1)
     for transaction in transactions:
         print(transaction)
 
     # create a dataframe from any dataclass based object
-    hframe: pd.DataFrame = pd.DataFrame(dataclasses.asdict(h) for h in holdings)
+    vframe: pd.DataFrame = pd.DataFrame(dataclasses.asdict(v) for v in holdings)
+    hframe: pd.DataFrame = pd.DataFrame(dataclasses.asdict(h) for h in histories)
     tframe: pd.DataFrame = pd.DataFrame(dataclasses.asdict(t) for t in transactions)
 ```
 
@@ -79,6 +85,16 @@ This app will save a CSV file for the current date with all investment holdings.
 cd ./workspace
 conda activate PersonalCapitalScraper
 python -m scraper.apps.holdings
+```
+
+### python -m scraper.apps.histories
+
+This app will save a CSV file for history records in the time period for all investment accounts.
+
+```
+cd ./workspace
+conda activate PersonalCapitalScraper
+python -m scraper.apps.histories --t0 2019-08-10 --dt 1
 ```
 
 ### python -m scraper.apps.transactions
@@ -111,6 +127,14 @@ rules:
       accountName: 'RothIRA'
       ticker: 'VTSAX'
 ```
+
+### fillna-accounts.yaml
+
+The same logic is used as for fillna-holdings.
+
+### fillna-histories.yaml
+
+The same logic is used as for fillna-holdings.
 
 ### fillna-transactions.yaml
 
