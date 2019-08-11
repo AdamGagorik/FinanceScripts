@@ -1,6 +1,7 @@
 """
 A script to save a accounts CSV for the current date.
 """
+import datetime
 import logging
 import typing
 
@@ -25,3 +26,10 @@ def run(main: typing.Callable, args: typing.Callable):
         logging.exception('caught unhandled exception!')
         exit(-1)
     exit(0)
+
+
+def yyyy_mm_dd(v: str) -> datetime.datetime:
+    """
+    Convert argparse string to datetime.
+    """
+    return datetime.datetime.strptime(v, '%Y-%m-%d')
