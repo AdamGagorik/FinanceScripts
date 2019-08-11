@@ -4,6 +4,7 @@ A script to play with the personal capital api.
 import pandas as pd
 import dataclasses
 import functools
+import logging
 import inspect
 import typing
 import yaml
@@ -180,9 +181,23 @@ class Scraper:
         """
         frame_: pd.DataFrame = pd.DataFrame(dataclasses.asdict(obj) for obj in self.objects)
 
-        columns: list = [f.name for f in dataclasses.fields(self.__store_class__)]
+        columns: list = [f.name for f in dataclasses.fields(self.__store_class__) if f.name in frame_.columns]
         if columns:
             frame_: pd.DataFrame = frame_.sort_values(by=columns)
             frame_: pd.DataFrame = frame_.reset_index(drop=True)
 
         return frame_
+
+    @classmethod
+    def export(cls, stub: str, **kwargs) -> 'Scraper':
+        """
+        Create and instance and save the resulting dataframe to a file.
+
+        Parameters:
+            stub: The name of the CSV file to save.
+            **kwargs: The key word arguments to the constructor.
+        """
+        instance = cls(handler=PCHandler(), **kwargs)
+        instance.frame.to_csv(stub.format(**kwargs, config=instance.handler.config), index=False)
+        logging.debug('%s\n%s', cls.__name__, instance.frame)
+        return instance
