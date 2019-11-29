@@ -24,6 +24,9 @@ class History(scraper.base.ObjectMapping):
     expense: float = 0.0
     income: float = 0.0
     percentOfTotal: float = 0.0
+    t0: datetime.datetime = datetime.datetime(1900, 1, 1)
+    t1: datetime.datetime = datetime.datetime(1900, 1, 1)
+    dt: int = 0
 
 
 class HistoriesScraper(scraper.base.Scraper):
@@ -76,4 +79,4 @@ def for_each_month_in(year: int, force: bool = False):
     for month in range(1, 13):
         weekday, numdays = calendar.monthrange(year, month)
         kwargs = dict(t0=datetime.datetime(year, month, 1), dt=numdays - 1)
-        HistoriesScraper.export(**kwargs, stub='{t0:%Y-%m-%d}-{dt:03d}-histories.csv', force=force)
+        yield HistoriesScraper.export(**kwargs, stub='{t0:%Y-%m-%d}-{dt:03d}-histories.csv', force=force)
