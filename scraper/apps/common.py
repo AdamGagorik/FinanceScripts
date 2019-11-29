@@ -9,14 +9,20 @@ import typing
 import scraper.config
 
 
-def run(main: typing.Callable, args: typing.Callable):
+def run(main: typing.Callable, args: typing.Callable, exiting: bool = True) -> int:
     """
     A helper method to execute the main function of a script.
 
     Parameters:
          main: The main script function.
          args: The command line arguments method.
+         exiting: This method will run sys.exit?
+
+    Returns:
+        The exitcode, which is >= 0 if the program succeeded.
     """
+    exitcode: int = 0
+
     # noinspection PyBroadException
     try:
         scraper.config.logging()
@@ -24,8 +30,12 @@ def run(main: typing.Callable, args: typing.Callable):
         main(**args().__dict__)
     except Exception:
         logging.exception('caught unhandled exception!')
-        exit(-1)
-    exit(0)
+        exitcode = -1
+
+    if exiting:
+        exit(exitcode)
+    else:
+        return exitcode
 
 
 def yyyy_mm_dd(v: str) -> datetime.datetime:
