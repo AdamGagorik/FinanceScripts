@@ -1,11 +1,13 @@
 """
 Handle the API to fetch history data.
 """
+import pandas as pd
 import dataclasses
 import calendar
 import datetime
 import requests
 import logging
+import typing
 
 
 import scraper.base
@@ -68,15 +70,21 @@ class HistoriesScraper(scraper.base.Scraper):
         return data
 
 
-def for_each_month_in(year: int, force: bool = False):
+def for_each_month_in(year: int, **kwargs) -> typing.Generator[pd.DataFrame, None, None]:
     """
     Fetch the histories given year.
 
     Parameters:
         year: The year to fetch the histories for.
-        force: Use the API even if the store exists?
     """
     for month in range(1, 13):
         weekday, numdays = calendar.monthrange(year, month)
-        kwargs = dict(t0=datetime.datetime(year, month, 1), dt=numdays - 1)
-        yield HistoriesScraper.export(**kwargs, stub='{t0:%Y-%m-%d}-{dt:03d}-histories.csv', force=force)
+        _kwargs = dict(t0=datetime.datetime(year, month, 1), dt=numdays - 1, **kwargs)
+        yield HistoriesScraper.export(**_kwargs, stub='{t0:%Y-%m-%d}-{dt:03d}-histories.csv').frame
+
+
+def frame_for_each_month_in(**kwargs) -> pd.DataFrame:
+    """
+    Fetch the histories given year.
+    """
+    return pd.concat(scraper.apis.histories.for_each_month_in(**kwargs), ignore_index=True)
