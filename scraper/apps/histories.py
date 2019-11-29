@@ -13,7 +13,7 @@ from scraper.apps.common import yyyy_mm_dd
 
 
 # noinspection DuplicatedCode
-def get_arguments() -> argparse.Namespace:
+def get_arguments(args=None) -> argparse.Namespace:
     """
     Get the command line arguments.
     """
@@ -22,7 +22,7 @@ def get_arguments() -> argparse.Namespace:
     parser.add_argument('--stub', default='{t0:%Y-%m-%d}-{dt:03d}-histories.csv', type=str)
     parser.add_argument('--t0', default=datetime.datetime.now(tz=datetime.timezone.utc), type=yyyy_mm_dd)
     parser.add_argument('--dt', default=1, type=int, help='number of days after t0 to fetch')
-    return parser.parse_args()
+    return parser.parse_args(args=args)
 
 
 if __name__ == '__main__':
