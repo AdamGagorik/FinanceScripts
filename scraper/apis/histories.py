@@ -4,6 +4,7 @@ Handle the API to fetch history data.
 import dataclasses
 import datetime
 import requests
+import logging
 
 
 import scraper.base
@@ -42,6 +43,8 @@ class HistoriesScraper(scraper.base.Scraper):
         self.t0: datetime.datetime = t0
         self.t1: datetime.datetime = t0 + datetime.timedelta(days=dt)
         super().__init__(*args, **kwargs)
+        logging.debug('t0: %s', self.t0)
+        logging.debug('t1: %s', self.t1)
 
     def fetch(self) -> list:
         """
