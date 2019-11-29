@@ -21,7 +21,7 @@ class ObjectMapping:
     A base class to aid in creating objects from JSON.
     """
     @classmethod
-    def safe_init(cls, **kwargs) -> 'ObjectMapping':
+    def safe_init(cls, instance: typing.Any, **kwargs) -> 'ObjectMapping':
         """
         Create an object from the keyword arguments.
         Silently ignore any keyword arguments that are not known.
@@ -31,7 +31,10 @@ class ObjectMapping:
             try:
                 skwargs[name] = kwargs[name]
             except KeyError:
-                pass
+                try:
+                    skwargs[name] = getattr(instance, name)
+                except AttributeError:
+                    pass
 
         return cls(**skwargs)
 
@@ -158,7 +161,8 @@ class Scraper:
         Returns:
             A list of transaction objects.
         """
-        return [self.__store_class__.safe_init(**transaction).fillna(self.rules) for transaction in self.data]
+        return [self.__store_class__.safe_init(instance=self, **transaction).fillna(self.rules)
+                for transaction in self.data]
 
     def __iter__(self) -> typing.Generator[ObjectMapping, None, None]:
         """
