@@ -2,6 +2,7 @@
 Handle the API to fetch history data.
 """
 import dataclasses
+import calendar
 import datetime
 import requests
 import logging
@@ -62,3 +63,17 @@ class HistoriesScraper(scraper.base.Scraper):
         data: list = data.get('spData', {}).get('accountSummaries', [])
 
         return data
+
+
+def for_each_month_in(year: int, force: bool = False):
+    """
+    Fetch the histories given year.
+
+    Parameters:
+        year: The year to fetch the histories for.
+        force: Use the API even if the store exists?
+    """
+    for month in range(1, 13):
+        weekday, numdays = calendar.monthrange(year, month)
+        kwargs = dict(t0=datetime.datetime(year, month, 1), dt=numdays - 1)
+        HistoriesScraper.export(**kwargs, stub='{t0:%Y-%m-%d}-{dt:03d}-histories.csv', force=force)
