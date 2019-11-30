@@ -11,16 +11,16 @@ from personalcapital import RequireTwoFactorException
 from personalcapital import PersonalCapital
 
 
-from scraper.config import Config
+from scraper.config import PCConfig
 
 
 class PCHandler:
     """
     Handler to create the personal capital session.
     """
-    def __init__(self, config: Config = None):
+    def __init__(self, config: PCConfig = None):
         #: The scraper config instance
-        self.config: Config = config if config is not None else Config()
+        self.config: PCConfig = config if config is not None else PCConfig()
         #: The personal capital instance
         self._pc: typing.Union[PersonalCapital, None] = None
 
