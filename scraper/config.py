@@ -71,6 +71,19 @@ class PCConfig(BaseConfig):
         self.cookies = os.path.join(self.workdir, self.cookies)
 
 
+@dataclasses.dataclass()
+class YNABConfig(BaseConfig):
+    """
+    The scraper configuration for YNAB.
+    """
+    @property
+    def ynab_apikey(self) -> str:
+        """
+        Get the token for the YNAB REST API.
+        """
+        return os.environ.get('YNAB_APIKEY', '')
+
+
 def pandas():
     """
     Set up the pandas module.
