@@ -11,16 +11,40 @@ from personalcapital import RequireTwoFactorException
 from personalcapital import PersonalCapital
 
 
-from scraper.config import PCConfig
+from scraper.config import BaseConfig
+from scraper.config import YNABConfig
+from scraper.config import PCAPConfig
 
 
-class PCHandler:
+class BaseHandler:
     """
-    Handler to create the personal capital session.
+    Handler to create a REST session.
     """
-    def __init__(self, config: PCConfig = None):
+    __config_class__ = BaseConfig
+
+    def __init__(self, config=None):
         #: The scraper config instance
-        self.config: PCConfig = config if config is not None else PCConfig()
+        self.config = config if config is not None else self.__config_class__()
+
+
+class YNABHandler(BaseHandler):
+    """
+    Handler to create the Personal Capital session.
+    """
+    __config_class__ = YNABConfig
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
+class PCAPHandler(BaseHandler):
+    """
+    Handler to create the Personal Capital session.
+    """
+    __config_class__ = PCAPConfig
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         #: The personal capital instance
         self._pc: typing.Union[PersonalCapital, None] = None
 

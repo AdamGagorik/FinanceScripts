@@ -45,7 +45,7 @@ class BaseConfig:
 
 
 @dataclasses.dataclass()
-class PCConfig(BaseConfig):
+class PCAPConfig(BaseConfig):
     """
     The scraper configuration for Personal Capital.
     """

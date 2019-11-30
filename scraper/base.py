@@ -11,7 +11,7 @@ import yaml
 import os
 
 
-from scraper.handler import PCHandler
+from scraper.handler import PCAPHandler
 
 
 # noinspection PyArgumentList
@@ -95,14 +95,14 @@ class Scraper:
     __fillna_yaml__: str = 'fillna-scraper.yaml'
     __store_class__: ObjectMapping = ObjectMapping
 
-    def __init__(self, handler: PCHandler, force: bool = False):
+    def __init__(self, handler: PCAPHandler, force: bool = False):
         """
         Parameters:
             handler: The personal capital api handler instance.
             force: Use the API even if the store exists?
         """
         #: The personal capital api handler
-        self.handler: PCHandler = handler
+        self.handler: PCAPHandler = handler
         #: The name of the file to store the API results in
         self.store: str = os.path.join(handler.config.workdir, self.__reload_yaml__)
         self.store: str = self.store.format(dt=handler.config.dt, self=self)
@@ -201,7 +201,7 @@ class Scraper:
             stub: The name of the CSV file to save.
             **kwargs: The key word arguments to the constructor.
         """
-        instance = cls(handler=PCHandler(), **kwargs)
+        instance = cls(handler=PCAPHandler(), **kwargs)
         instance.frame.to_csv(stub.format(**kwargs, config=instance.handler.config), index=False)
         logging.debug('%s\n%s', cls.__name__, instance.frame)
         return instance
