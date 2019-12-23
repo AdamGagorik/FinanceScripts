@@ -7,6 +7,7 @@ The aim is to...
 
   1) download daily holdings automatically
   2) download historical data
+  3) update YNAB accounts
 
 Setup
 =====
@@ -26,6 +27,7 @@ Set the following environment variables.
 ```bash
 PC_PASSWORD=[Your PC Password]
 PC_USERNAME=[Your PC Username]
+YNAB_APIKEY=[Your YNAB apikey]
 ```
 
 - These variables may be set in a filed called `.env` in the run directory.
@@ -46,25 +48,25 @@ import scraper.apis
 
 if __name__ == '__main__':
     # create API handler instance
-    handler = scraper.handler.PCHandler()
+    handler = scraper.handler.PCAPHandler()
     
     # fetch all account objects
-    accounts = scraper.apis.AccountsScraper(handler)
+    accounts = scraper.apis.pcap.AccountsScraper(handler)
     for account in accounts:
         print(account)
     
     # fetch all holding objects
-    holdings = scraper.apis.HoldingsScraper(handler)
+    holdings = scraper.apis.pcap.HoldingsScraper(handler)
     for holding in holdings:
         print(holding)
 
     # fetch all history objects
-    histories = scraper.apis.HistoriesScraper(handler, t0=datetime.datetime.now(), dt=1)
+    histories = scraper.apis.pcap.HistoriesScraper(handler, t0=datetime.datetime.now(), dt=1)
     for history in histories:
         print(history)
 
     # fetch all transaction objects
-    transactions = scraper.apis.TransactionsScraper(handler, t0=datetime.datetime.now(), dt=1)
+    transactions = scraper.apis.pcap.TransactionsScraper(handler, t0=datetime.datetime.now(), dt=1)
     for transaction in transactions:
         print(transaction)
 
@@ -77,34 +79,45 @@ if __name__ == '__main__':
 Apps
 ====
 
-### python -m scraper.apps.holdings
+### python -m scraper.pcap.apps.holdings
 
 This app will save a CSV file for the current date with all investment holdings.
 
 ```
 cd ./workspace
 conda activate PersonalCapitalScraper
-python -m scraper.apps.holdings
+python -m scraper.pcap.apps.holdings
 ```
 
-### python -m scraper.apps.histories
+### python -m scraper.pcap.apps.histories
 
 This app will save a CSV file for history records in the time period for all investment accounts.
 
 ```
 cd ./workspace
 conda activate PersonalCapitalScraper
-python -m scraper.apps.histories --t0 2019-08-10 --dt 1
+python -m scraper.pcap.apps.histories --t0 2019-08-10 --dt 1
 ```
 
-### python -m scraper.apps.transactions
+### python -m scraper.pcap.apps.transactions
 
 This app will save a CSV file for transactions in the time period for all accounts.
 
 ```
 cd ./workspace
 conda activate PersonalCapitalScraper
-python -m scraper.apps.transactions --t0 2019-08-10 --dt 1
+python -m scraper.pcap.apps.transactions --t0 2019-08-10 --dt 1
+```
+
+### python -m scraper.pcap.apps.joinhistories
+
+This app will run the histories scraper at the specified freqency over the given year.
+For example, use this to download the the balance change every week for a given account.
+
+```
+cd ./workspace
+conda activate PersonalCapitalScraper
+python -m scraper.apps.pcap.joinhistories --year 2019 --freq m
 ```
 
 Filling Logic
