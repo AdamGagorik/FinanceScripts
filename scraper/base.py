@@ -159,10 +159,9 @@ class Scraper:
         Get the store object instances.
 
         Returns:
-            A list of transaction objects.
+            A list of objects.
         """
-        return [self.__store_class__.safe_init(instance=self, **transaction).fillna(self.rules)
-                for transaction in self.data]
+        return [self.__store_class__.safe_init(instance=self, **obj).fillna(self.rules) for obj in self.data]
 
     def __iter__(self) -> typing.Generator[ObjectMapping, None, None]:
         """
@@ -178,10 +177,10 @@ class Scraper:
     @functools.lru_cache(maxsize=1)
     def frame(self) -> pd.DataFrame:
         """
-        Get the transaction objects as a dataframe.
+        Get the objects as a dataframe.
 
         Returns:
-            The transactions dataframe.
+            The dataframe.
         """
         frame_: pd.DataFrame = pd.DataFrame(dataclasses.asdict(obj) for obj in self.objects)
 
