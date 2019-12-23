@@ -70,9 +70,26 @@ class HistoriesScraper(scraper.base.Scraper):
         return data
 
 
+def for_each_week_in(year: int, month: int = 1, **kwargs) -> typing.Generator[pd.DataFrame, None, None]:
+    """
+    Fetch the histories for each week in the given year.
+
+    Parameters:
+        year: The year to fetch the histories for.
+        month: The month to start the iteration in.
+    """
+    ti = datetime.datetime(year, month, 1)
+    tf = min(datetime.datetime.today(), datetime.datetime(year, 12, 31))
+    for t1 in pd.date_range(start=ti, end=tf, freq='W-SAT'):
+        t0 = t1 - datetime.timedelta(days=6)
+        t0 = t0 if t0 >= ti else ti
+        _kwargs = dict(t0=t0, dt=(t1 - t0).days, **kwargs)
+        yield HistoriesScraper.export(**_kwargs, stub='{t0:%Y-%m-%d}-{dt:03d}-histories.csv').frame
+
+
 def for_each_month_in(year: int, **kwargs) -> typing.Generator[pd.DataFrame, None, None]:
     """
-    Fetch the histories given year.
+    Fetch the histories for each month in the given year.
 
     Parameters:
         year: The year to fetch the histories for.
@@ -83,8 +100,15 @@ def for_each_month_in(year: int, **kwargs) -> typing.Generator[pd.DataFrame, Non
         yield HistoriesScraper.export(**_kwargs, stub='{t0:%Y-%m-%d}-{dt:03d}-histories.csv').frame
 
 
+def frame_for_each_week_in(**kwargs) -> pd.DataFrame:
+    """
+    Fetch the histories for each week in the given year.
+    """
+    return pd.concat(scraper.apis.histories.for_each_week_in(**kwargs), ignore_index=True)
+
+
 def frame_for_each_month_in(**kwargs) -> pd.DataFrame:
     """
-    Fetch the histories given year.
+    Fetch the histories for each month in the given year.
     """
     return pd.concat(scraper.apis.histories.for_each_month_in(**kwargs), ignore_index=True)
