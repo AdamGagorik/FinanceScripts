@@ -36,14 +36,10 @@ def main(stub: str, year: int, freq: str, force: bool):
         raise NotImplementedError(freq) from None
 
     # show histories broken down by account
+    formatters = {col: lambda value: f'{value:<25}' for col in frame.columns if frame.dtypes[col] == object}
     for account, histories in frame.groupby(by='accountName'):
-        rowsum = histories.groupby('accountName').agg(['sum']).droplevel(1, axis=1).reset_index()
-        joined = pd.concat([histories, rowsum], ignore_index=True, sort=False)
-        logging.debug('\n%s', joined)
-
-    # show total sums over all accounts
-    rowsum = frame.groupby('accountName').agg(['sum']).droplevel(1, axis=1).reset_index()
-    logging.debug('total\n%s', rowsum)
+        histories = histories[[col for col in histories.columns if col not in ['accountName', 'userAccountId']]]
+        logging.debug('\n%s\n\n%s', account, histories.to_string(formatters=formatters, index=False, index_names=False))
 
 
 if __name__ == '__main__':
