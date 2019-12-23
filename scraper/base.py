@@ -11,6 +11,8 @@ import yaml
 import os
 
 
+from scraper.handler import BaseHandler
+from scraper.handler import YNABHandler
 from scraper.handler import PCAPHandler
 
 
@@ -87,28 +89,36 @@ class ObjectMapping:
                 raise AttributeError(k)
 
 
-class Scraper:
+class BaseScraper:
     """
-    A base class that can preform API calls or reload data using a PC handler.
+    A base class that can preform API calls or reload data using a handler.
     """
     __reload_yaml__: str = '{dt:%Y-%m-%d}-scraper.yaml'
     __fillna_yaml__: str = 'fillna-scraper.yaml'
+    __api_handler__: typing.Callable = BaseHandler
     __store_class__: ObjectMapping = ObjectMapping
 
-    def __init__(self, handler: PCAPHandler, force: bool = False):
+    def __init__(self, handler, force: bool = False):
         """
         Parameters:
-            handler: The personal capital api handler instance.
+            handler: The api handler instance.
             force: Use the API even if the store exists?
         """
         #: The personal capital api handler
-        self.handler: PCAPHandler = handler
+        self._handler = handler
         #: The name of the file to store the API results in
         self.store: str = os.path.join(handler.config.workdir, self.__reload_yaml__)
         self.store: str = self.store.format(dt=handler.config.dt, self=self)
         #: The data that was fetched as json from the API call
         self._data: typing.Union[list, None] = None
         self.force: bool = force
+
+    @property
+    def handler(self) -> BaseHandler:
+        """
+        Get the handler instance.
+        """
+        return self._handler
 
     @property
     def data(self) -> list:
@@ -126,9 +136,9 @@ class Scraper:
         """
         raise NotImplementedError
 
-    def reload(self) -> 'Scraper':
+    def reload(self) -> 'BaseScraper':
         """
-        Download the data from the PC API or reload it from disk.
+        Download the data from the API or reload it from disk.
         """
         if self.force or not os.path.exists(self.store):
             self._data = self.fetch()
@@ -192,7 +202,7 @@ class Scraper:
         return frame_
 
     @classmethod
-    def export(cls, stub: str, **kwargs) -> 'Scraper':
+    def export(cls, stub: str, **kwargs) -> 'BaseScraper':
         """
         Create and instance and save the resulting dataframe to a file.
 
@@ -200,7 +210,53 @@ class Scraper:
             stub: The name of the CSV file to save.
             **kwargs: The key word arguments to the constructor.
         """
-        instance = cls(handler=PCAPHandler(), **kwargs)
+        instance = cls(handler=cls.__api_handler__(), **kwargs)
         instance.frame.to_csv(stub.format(**kwargs, config=instance.handler.config), index=False)
         logging.debug('%s\n%s', cls.__name__, instance.frame)
         return instance
+
+
+class PCAPScraper(BaseScraper):
+    """
+    A base class that can preform API calls or reload data using a PCAP handler.
+    """
+    __reload_yaml__: str = '{dt:%Y-%m-%d}-scraper.yaml'
+    __fillna_yaml__: str = 'fillna-scraper.yaml'
+    __api_handler__: typing.Callable = PCAPHandler
+    __store_class__: ObjectMapping = ObjectMapping
+
+    def fetch(self) -> list:
+        """
+        The logic of the API call.
+        """
+        raise NotImplementedError
+
+    @property
+    def handler(self) -> PCAPHandler:
+        """
+        Get the handler instance.
+        """
+        return self._handler
+
+
+class YNABScraper(BaseScraper):
+    """
+    A base class that can preform API calls or reload data using a YNAB handler.
+    """
+    __reload_yaml__: str = '{dt:%Y-%m-%d}-scraper.yaml'
+    __fillna_yaml__: str = 'fillna-scraper.yaml'
+    __api_handler__: typing.Callable = YNABHandler
+    __store_class__: ObjectMapping = ObjectMapping
+
+    def fetch(self) -> list:
+        """
+        The logic of the API call.
+        """
+        raise NotImplementedError
+
+    @property
+    def handler(self) -> YNABHandler:
+        """
+        Get the handler instance.
+        """
+        return self._handler

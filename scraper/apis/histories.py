@@ -31,7 +31,7 @@ class History(scraper.base.ObjectMapping):
     dt: int = 0
 
 
-class HistoriesScraper(scraper.base.Scraper):
+class HistoriesScraper(scraper.base.PCAPScraper):
     """
     Scrape the historiess data from personal capital.
     """

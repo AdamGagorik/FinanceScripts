@@ -16,7 +16,7 @@ class Account(scraper.base.ObjectMapping):
     userAccountId: str = ''
 
 
-class AccountsScraper(scraper.base.Scraper):
+class AccountsScraper(scraper.base.PCAPScraper):
     """
     Scrape the accounts data from personal capital.
     """

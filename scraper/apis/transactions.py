@@ -25,7 +25,7 @@ class Transaction(scraper.base.ObjectMapping):
             datetime.datetime.strptime(self.transactionDate, '%Y-%m-%d')
 
 
-class TransactionsScraper(scraper.base.Scraper):
+class TransactionsScraper(scraper.base.PCAPScraper):
     """
     Scrape the transactions data from personal capital.
     """

@@ -22,7 +22,7 @@ class Holding(scraper.base.ObjectMapping):
     userAccountId: int = -1
 
 
-class HoldingsScraper(scraper.base.Scraper):
+class HoldingsScraper(scraper.base.PCAPScraper):
     """
     Scrape the holdings data from personal capital.
     """
