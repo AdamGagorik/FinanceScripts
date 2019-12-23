@@ -1,3 +1,6 @@
 [submodule "external/personalcapital"]
 	path = external/personalcapital
 	url = https://github.com/haochi/personalcapital.git
+[submodule "external/ynab"]
+	path = external/ynab
+	url = https://github.com/dmlerner/ynab-api.git
