@@ -5,11 +5,11 @@ import datetime
 import argparse
 
 
-import scraper.apps.common
 import scraper.apis
+import scraper.helpers
 
 
-from scraper.apps.common import yyyy_mm_dd
+from scraper.helpers import yyyy_mm_dd
 
 
 # noinspection DuplicatedCode
@@ -26,4 +26,4 @@ def get_arguments() -> argparse.Namespace:
 
 
 if __name__ == '__main__':
-    scraper.apps.common.run(scraper.apis.TransactionsScraper.export, get_arguments)
+    scraper.helpers.run(scraper.apis.pcap.TransactionsScraper.export, get_arguments)

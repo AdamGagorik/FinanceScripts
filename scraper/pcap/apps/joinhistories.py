@@ -6,8 +6,8 @@ import argparse
 import logging
 
 
-import scraper.apis.histories
-import scraper.apps.common
+import scraper.apis
+import scraper.helpers
 
 
 # noinspection DuplicatedCode
@@ -25,7 +25,7 @@ def main(year: int, force: bool):
     """
     Main script function.
     """
-    frame = scraper.apis.histories.frame_for_each_week_in(year=year, force=force)
+    frame = scraper.apis.pcap.histories.frame_for_each_week_in(year=year, force=force)
 
     # show histories broken down by account
     for account, histories in frame.groupby(by='accountName'):
@@ -39,4 +39,4 @@ def main(year: int, force: bool):
 
 
 if __name__ == '__main__':
-    scraper.apps.common.run(main, get_arguments)
+    scraper.helpers.run(main, get_arguments)

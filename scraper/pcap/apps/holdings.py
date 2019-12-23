@@ -4,8 +4,8 @@ A script to save a holdings CSV for the current date.
 import argparse
 
 
-import scraper.apps.common
 import scraper.apis
+import scraper.helpers
 
 
 # noinspection DuplicatedCode
@@ -20,4 +20,4 @@ def get_arguments() -> argparse.Namespace:
 
 
 if __name__ == '__main__':
-    scraper.apps.common.run(scraper.apis.HoldingsScraper.export, get_arguments)
+    scraper.helpers.run(scraper.apis.pcap.HoldingsScraper.export, get_arguments)

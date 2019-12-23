@@ -104,11 +104,11 @@ def frame_for_each_week_in(**kwargs) -> pd.DataFrame:
     """
     Fetch the histories for each week in the given year.
     """
-    return pd.concat(scraper.apis.histories.for_each_week_in(**kwargs), ignore_index=True)
+    return pd.concat(scraper.pcap.apis.histories.for_each_week_in(**kwargs), ignore_index=True)
 
 
 def frame_for_each_month_in(**kwargs) -> pd.DataFrame:
     """
     Fetch the histories for each month in the given year.
     """
-    return pd.concat(scraper.apis.histories.for_each_month_in(**kwargs), ignore_index=True)
+    return pd.concat(scraper.pcap.apis.histories.for_each_month_in(**kwargs), ignore_index=True)
