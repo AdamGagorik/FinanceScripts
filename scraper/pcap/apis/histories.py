@@ -70,11 +70,12 @@ class HistoriesScraper(scraper.base.PCAPScraper):
         return data
 
 
-def for_each_week_in(year: int, month: int = 1, **kwargs) -> typing.Generator[pd.DataFrame, None, None]:
+def for_each_week_in(stub: str, year: int, month: int = 1, **kwargs) -> typing.Generator[pd.DataFrame, None, None]:
     """
     Fetch the histories for each week in the given year.
 
     Parameters:
+        stub: The name of the CSV file to save.
         year: The year to fetch the histories for.
         month: The month to start the iteration in.
     """
@@ -84,20 +85,21 @@ def for_each_week_in(year: int, month: int = 1, **kwargs) -> typing.Generator[pd
         t0 = t1 - datetime.timedelta(days=6)
         t0 = t0 if t0 >= ti else ti
         _kwargs = dict(t0=t0, dt=(t1 - t0).days, **kwargs)
-        yield HistoriesScraper.export(**_kwargs, stub='{t0:%Y-%m-%d}-{dt:03d}-histories.csv').frame
+        yield HistoriesScraper.export(**_kwargs, stub=stub).frame
 
 
-def for_each_month_in(year: int, **kwargs) -> typing.Generator[pd.DataFrame, None, None]:
+def for_each_month_in(stub: str, year: int, **kwargs) -> typing.Generator[pd.DataFrame, None, None]:
     """
     Fetch the histories for each month in the given year.
 
     Parameters:
+        stub: The name of the CSV file to save.
         year: The year to fetch the histories for.
     """
     for month in range(1, 13):
         weekday, numdays = calendar.monthrange(year, month)
         _kwargs = dict(t0=datetime.datetime(year, month, 1), dt=numdays - 1, **kwargs)
-        yield HistoriesScraper.export(**_kwargs, stub='{t0:%Y-%m-%d}-{dt:03d}-histories.csv').frame
+        yield HistoriesScraper.export(**_kwargs, stub=stub).frame
 
 
 def frame_for_each_week_in(**kwargs) -> pd.DataFrame:

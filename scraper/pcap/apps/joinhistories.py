@@ -17,15 +17,16 @@ def get_arguments() -> argparse.Namespace:
     """
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--force', action='store_true', help='force redownload?')
+    parser.add_argument('--stub', default='{t0:%Y-%m-%d}-{dt:03d}-pcap-histories.csv', type=str)
     parser.add_argument('--year', default=2019, type=int, help='year to fetch histories for')
     return parser.parse_args()
 
 
-def main(year: int, force: bool):
+def main(stub: str, year: int, force: bool):
     """
     Main script function.
     """
-    frame = scraper.apis.pcap.histories.frame_for_each_week_in(year=year, force=force)
+    frame = scraper.apis.pcap.histories.frame_for_each_week_in(stub=stub, year=year, force=force)
 
     # show histories broken down by account
     for account, histories in frame.groupby(by='accountName'):

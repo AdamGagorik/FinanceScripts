@@ -19,7 +19,7 @@ def get_arguments(args=None) -> argparse.Namespace:
     """
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--force', action='store_true', help='force redownload?')
-    parser.add_argument('--stub', default='{t0:%Y-%m-%d}-{dt:03d}-histories.csv', type=str)
+    parser.add_argument('--stub', default='{t0:%Y-%m-%d}-{dt:03d}-pcap-histories.csv', type=str)
     parser.add_argument('--t0', default=datetime.datetime.now(tz=datetime.timezone.utc), type=yyyy_mm_dd)
     parser.add_argument('--dt', default=1, type=int, help='number of days after t0 to fetch')
     return parser.parse_args(args=args)

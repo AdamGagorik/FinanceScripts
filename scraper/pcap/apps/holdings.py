@@ -15,7 +15,7 @@ def get_arguments() -> argparse.Namespace:
     """
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--force', action='store_true', help='force redownload?')
-    parser.add_argument('--stub', default='{config.dt:%Y-%m-%d}-holdings.csv', type=str)
+    parser.add_argument('--stub', default='{config.dt:%Y-%m-%d}-pcap-holdings.csv', type=str)
     return parser.parse_args()
 
 
