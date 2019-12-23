@@ -29,8 +29,8 @@ class TransactionsScraper(scraper.base.PCAPScraper):
     """
     Scrape the transactions data from personal capital.
     """
-    __reload_yaml__: str = '{self.t0:%Y-%m-%d}-{self.dt:03d}-transactions.yaml'
-    __fillna_yaml__: str = 'fillna-transactions.yaml'
+    __reload_yaml__: str = '{self.t0:%Y-%m-%d}-{self.dt:03d}-pcap-transactions.yaml'
+    __fillna_yaml__: str = 'fillna-pcpa-transactions.yaml'
     __store_class__: type = Transaction
 
     def __init__(self, *args, t0: datetime.datetime, dt: int, **kwargs):

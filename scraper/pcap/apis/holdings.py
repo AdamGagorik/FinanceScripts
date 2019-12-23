@@ -26,8 +26,8 @@ class HoldingsScraper(scraper.base.PCAPScraper):
     """
     Scrape the holdings data from personal capital.
     """
-    __reload_yaml__: str = '{dt:%Y-%m-%d}-holdings.yaml'
-    __fillna_yaml__: str = 'fillna-holdings.yaml'
+    __reload_yaml__: str = '{dt:%Y-%m-%d}-pcap-holdings.yaml'
+    __fillna_yaml__: str = 'fillna-pcap-holdings.yaml'
     __store_class__: type = Holding
 
     def fetch(self) -> list:

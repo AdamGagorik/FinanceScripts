@@ -20,8 +20,8 @@ class AccountsScraper(scraper.base.PCAPScraper):
     """
     Scrape the accounts data from personal capital.
     """
-    __reload_yaml__: str = '{dt:%Y-%m-%d}-accounts.yaml'
-    __fillna_yaml__: str = 'fillna-accounts.yaml'
+    __reload_yaml__: str = '{dt:%Y-%m-%d}-pcap-accounts.yaml'
+    __fillna_yaml__: str = 'fillna-pcap-accounts.yaml'
     __store_class__: type = Account
 
     def fetch(self) -> list:

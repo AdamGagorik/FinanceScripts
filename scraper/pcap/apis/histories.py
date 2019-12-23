@@ -35,8 +35,8 @@ class HistoriesScraper(scraper.base.PCAPScraper):
     """
     Scrape the historiess data from personal capital.
     """
-    __reload_yaml__: str = '{self.t0:%Y-%m-%d}-{self.dt:03d}-histories.yaml'
-    __fillna_yaml__: str = 'fillna-histories.yaml'
+    __reload_yaml__: str = '{self.t0:%Y-%m-%d}-{self.dt:03d}-pcap-histories.yaml'
+    __fillna_yaml__: str = 'fillna-pcap-histories.yaml'
     __store_class__: type = History
 
     def __init__(self, *args, t0: datetime.datetime, dt: int, **kwargs):
