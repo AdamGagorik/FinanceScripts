@@ -1,6 +1,7 @@
 """
 A script to save a history CSV for each month in the given year.
 """
+import pandas as pd
 import argparse
 import logging
 
@@ -24,9 +25,11 @@ def main(year: int, force: bool):
     """
     Main script function.
     """
-    frame = scraper.apis.histories.frame_for_each_month_in(year=year, force=force)
+    frame = scraper.apis.histories.frame_for_each_week_in(year=year, force=force)
     for account, histories in frame.groupby(by='accountName'):
-        logging.debug('\n%s', histories)
+        rowsum = histories.groupby('accountName').agg(['sum']).droplevel(1, axis=1).reset_index()
+        joined = pd.concat([histories, rowsum], ignore_index=True, sort=False)
+        logging.debug('\n%s', joined)
 
 
 if __name__ == '__main__':
