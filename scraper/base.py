@@ -202,18 +202,22 @@ class BaseScraper:
         return frame_
 
     @classmethod
-    def export(cls, stub: str, **kwargs) -> 'BaseScraper':
+    def export(cls, stub: str, debug: bool = True, **kwargs) -> 'BaseScraper':
         """
         Create and instance and save the resulting dataframe to a file.
 
         Parameters:
             stub: The name of the CSV file to save.
+            debug: Log the dataframe to the screen?
             **kwargs: The key word arguments to the constructor.
         """
         instance = cls(handler=cls.__api_handler__(), **kwargs)
         instance.frame.to_csv(stub.format(**kwargs, config=instance.handler.config), index=False)
-        logging.debug('%s\n%s', cls.__name__, instance.frame)
-        return instance
+        if debug:
+            logging.debug('%s\n%s', cls.__name__, instance.frame)
+            return instance
+        else:
+            return instance
 
 
 class PCAPScraper(BaseScraper):

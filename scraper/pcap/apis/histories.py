@@ -49,8 +49,6 @@ class HistoriesScraper(scraper.base.PCAPScraper):
         self.t0: datetime.datetime = t0
         self.t1: datetime.datetime = t0 + datetime.timedelta(days=dt)
         super().__init__(*args, **kwargs)
-        logging.debug('t0: %s', self.t0)
-        logging.debug('t1: %s', self.t1)
 
     def fetch(self) -> list:
         """
@@ -85,7 +83,8 @@ def for_each_week_in(stub: str, year: int, month: int = 1, **kwargs) -> typing.G
         t0 = t1 - datetime.timedelta(days=6)
         t0 = t0 if t0 >= ti else ti
         _kwargs = dict(t0=t0, dt=(t1 - t0).days, **kwargs)
-        yield HistoriesScraper.export(**_kwargs, stub=stub).frame
+        logging.debug('fetching %s to %s : %s', t0, t1, t1 - t0)
+        yield HistoriesScraper.export(**_kwargs, stub=stub, debug=False).frame
 
 
 def for_each_month_in(stub: str, year: int, **kwargs) -> typing.Generator[pd.DataFrame, None, None]:
@@ -98,8 +97,11 @@ def for_each_month_in(stub: str, year: int, **kwargs) -> typing.Generator[pd.Dat
     """
     for month in range(1, 13):
         weekday, numdays = calendar.monthrange(year, month)
-        _kwargs = dict(t0=datetime.datetime(year, month, 1), dt=numdays - 1, **kwargs)
-        yield HistoriesScraper.export(**_kwargs, stub=stub).frame
+        t0 = datetime.datetime(year, month, 1)
+        t1 = t0 + datetime.timedelta(days=numdays)
+        _kwargs = dict(t0=t0, dt=numdays - 1, **kwargs)
+        logging.debug('fetching %s to %s : %s', t0, t1, t1 - t0)
+        yield HistoriesScraper.export(**_kwargs, stub=stub, debug=False).frame
 
 
 def frame_for_each_week_in(**kwargs) -> pd.DataFrame:

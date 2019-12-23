@@ -19,14 +19,21 @@ def get_arguments() -> argparse.Namespace:
     parser.add_argument('--force', action='store_true', help='force redownload?')
     parser.add_argument('--stub', default='{t0:%Y-%m-%d}-{dt:03d}-pcap-histories.csv', type=str)
     parser.add_argument('--year', default=2019, type=int, help='year to fetch histories for')
+    parser.add_argument('--freq', choices=['m', 'w'], default='m', type=str, help='time period frequency')
     return parser.parse_args()
 
 
-def main(stub: str, year: int, force: bool):
+def main(stub: str, year: int, freq: str, force: bool):
     """
     Main script function.
     """
-    frame = scraper.apis.pcap.histories.frame_for_each_week_in(stub=stub, year=year, force=force)
+    try:
+        frame: pd.DataFrame = {
+            'w': scraper.apis.pcap.histories.frame_for_each_week_in,
+            'm': scraper.apis.pcap.histories.frame_for_each_month_in,
+        }[freq](stub=stub, year=year, force=force)
+    except KeyError:
+        raise NotImplementedError(freq) from None
 
     # show histories broken down by account
     for account, histories in frame.groupby(by='accountName'):
