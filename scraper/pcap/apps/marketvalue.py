@@ -52,7 +52,10 @@ def weeks_of_month(year: int, month: int) -> pd.DataFrame:
     samples = pd.date_range(start=start, periods=53, freq='W-MON', normalize=False, tz=datetime.timezone.utc)
     samples = samples - datetime.timedelta(microseconds=1)
 
-    return make_frame(samples)
+    samples = make_frame(samples)
+    samples = samples[samples['t1'].dt.month == month]
+
+    return samples
 
 
 def months_of_year(year: int) -> pd.DataFrame:
