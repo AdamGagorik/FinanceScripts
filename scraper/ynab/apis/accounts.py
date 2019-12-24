@@ -33,7 +33,7 @@ class AccountsScraper(scraper.base.YNABScraper):
     """
     Scrape the accounts data from YNAB.
     """
-    __reload_yaml__: str = '{dt:%Y-%m-%d}-ynab-accounts.yaml'
+    __reload_yaml__: str = '{dt:%Y-%m-%d}-{self.budget_id}-ynab-accounts.yaml'
     __fillna_yaml__: str = 'fillna-ynab-accounts.yaml'
     __store_class__: type = Account
 
