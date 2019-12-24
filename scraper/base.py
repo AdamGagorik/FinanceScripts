@@ -98,13 +98,14 @@ class BaseScraper:
     __api_handler__: typing.Callable = BaseHandler
     __store_class__: ObjectMapping = ObjectMapping
 
-    def __init__(self, handler, force: bool = False):
+    def __init__(self, handler=None, force: bool = False):
         """
         Parameters:
             handler: The api handler instance.
             force: Use the API even if the store exists?
         """
         #: The personal capital api handler
+        handler = handler if handler is not None else self.__api_handler__()
         self._handler = handler
         #: The name of the file to store the API results in
         self.store: str = os.path.join(handler.config.workdir, self.__reload_yaml__)
