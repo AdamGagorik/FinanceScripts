@@ -26,7 +26,29 @@ def make_frame(samples: pd.Series):
         't1': samples[+1:],
     })
 
+    # get today at midnight
+    nt = datetime.datetime.now(tz=datetime.timezone.utc)
+    nt = datetime.datetime(year=nt.year, month=nt.month, day=nt.day, tzinfo=datetime.timezone.utc)
+    nt = nt + datetime.timedelta(days=1, microseconds=-1)
+
+    # start time must be in the past
+    frame = frame[frame.t0 < nt]
+
+    # end time must be at most today midnight
+    subset = frame.loc[frame.t1 > nt, 't1']
+    if not subset.empty:
+        # only keep the last most interval
+        if len(subset) > 1:
+            frame = frame.loc[~frame.index.isin(subset.index[1:])]
+
+        # replace the interval upper bound
+        frame.loc[subset.index[0], 't1'] = \
+            frame.loc[subset.index[0], 't1'].replace(
+                year=nt.year, month=nt.month, day=nt.day)
+
     frame['dt'] = (frame['t1'] - frame['t0']).dt.days
+    logging.debug('\n%s', frame)
+
     return frame
 
 
