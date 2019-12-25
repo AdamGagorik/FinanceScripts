@@ -1,7 +1,7 @@
-Personal Capital Scraper
-========================
+Finance Scripts
+===============
 
-This is a script based on the [personalcapital] module by [haochi].
+This is a set of scripts to download and analyze finance data.
 
 The aim is to...
 
@@ -12,11 +12,16 @@ The aim is to...
 Setup
 =====
 
+Clone the repository.
+
+- This repository uses the [YNAB][ynab_api] API by [dmlerner].
+- This repository uses the [Personal Capital][personalcapital] API by [haochi].
+
 Create a conda environment.
 
 ```bash
 conda env create -f environment.yml
-conda activate PersonalCapitalScraper
+conda activate FinanceScripts
 ```
 
 Credentials
@@ -33,8 +38,8 @@ YNAB_APIKEY=[Your YNAB apikey]
 - These variables may be set in a filed called `.env` in the run directory.
 - Please note that the script will pause for 2-factor authentication on the 1st run.
 
-Examples
-========
+Example
+=======
 
 ```python
 import pandas as pd
@@ -42,82 +47,36 @@ import dataclasses
 import datetime
 
 
-import finance.handler
 import finance.apis
+import finance.scrapers
 
 
 if __name__ == '__main__':
     # create API handler instance
-    handler = finance.handler.PCAPHandler()
-    
-    # fetch all account objects
-    accounts = finance.apis.pcap.AccountsScraper(handler)
-    for account in accounts:
-        print(account)
-    
-    # fetch all holding objects
-    holdings = finance.apis.pcap.HoldingsScraper(handler)
-    for holding in holdings:
-        print(holding)
-
-    # fetch all history objects
-    histories = finance.apis.pcap.HistoriesScraper(handler, t0=datetime.datetime.now(), dt=1)
-    for history in histories:
-        print(history)
+    handler = finance.apis.pcap.PCAPHandler()
 
     # fetch all transaction objects
-    transactions = finance.apis.pcap.TransactionsScraper(handler, t0=datetime.datetime.now(), dt=1)
-    for transaction in transactions:
+    transactions = finance.scrapers.pcap.TransactionsScraper(handler, t0=datetime.datetime.now(), dt=1)
+    for transaction in transactions.objects:
         print(transaction)
 
     # create a dataframe from any dataclass based object
-    vframe: pd.DataFrame = pd.DataFrame(dataclasses.asdict(v) for v in holdings)
-    hframe: pd.DataFrame = pd.DataFrame(dataclasses.asdict(h) for h in histories)
-    tframe: pd.DataFrame = pd.DataFrame(dataclasses.asdict(t) for t in transactions)
+    tframe: pd.DataFrame = pd.DataFrame(dataclasses.asdict(t) for t in transactions.objects)
 ```
 
 Apps
 ====
 
-### python -m scraper.pcap.apps.holdings
+### python -m scraper.pcap.apps.marketvalue
 
-This app will save a CSV file for the current date with all investment holdings.
-
-```
-cd ./workspace
-conda activate PersonalCapitalScraper
-python -m scraper.pcap.apps.holdings
-```
-
-### python -m scraper.pcap.apps.histories
-
-This app will save a CSV file for history records in the time period for all investment accounts.
+A script to download the market value for an account.
+The script is given a starting date and a time period freqency.
+The rows of the resulting dataframe will display the market value at the timestamps.
 
 ```
 cd ./workspace
-conda activate PersonalCapitalScraper
-python -m scraper.pcap.apps.histories --t0 2019-08-10 --dt 1
-```
-
-### python -m scraper.pcap.apps.transactions
-
-This app will save a CSV file for transactions in the time period for all accounts.
-
-```
-cd ./workspace
-conda activate PersonalCapitalScraper
-python -m scraper.pcap.apps.transactions --t0 2019-08-10 --dt 1
-```
-
-### python -m scraper.pcap.apps.joinhistories
-
-This app will run the histories scraper at the specified freqency over the given year.
-For example, use this to download the the balance change every week for a given account.
-
-```
-cd ./workspace
-conda activate PersonalCapitalScraper
-python -m scraper.apps.pcap.joinhistories --year 2019 --freq m
+conda activate FinanceScripts
+python -m scraper.apps.pcap.marketvalue --start 2019-12-01 --freq W
 ```
 
 Filling Logic
@@ -141,17 +100,7 @@ rules:
       ticker: 'VTSAX'
 ```
 
-### fillna-accounts.yaml
-
-The same logic is used as for fillna-holdings.
-
-### fillna-histories.yaml
-
-The same logic is used as for fillna-holdings.
-
-### fillna-transactions.yaml
-
-The same logic is used as for fillna-holdings.
-
 [haochi]: https://github.com/haochi
+[dmlerner]: https://github.com/dmlerner
+[ynab_api]: https://github.com/dmlerner/ynab-api
 [personalcapital]: https://github.com/haochi/personalcapital
