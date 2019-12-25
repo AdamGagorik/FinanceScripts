@@ -93,6 +93,16 @@ def months_of_year(year: int) -> pd.DataFrame:
     return make_frame(samples)
 
 
+def get_histories(frame: pd.DataFrame, force: bool) -> typing.Generator[pd.DataFrame, None, None]:
+    """
+    Fetch the histories in the given intervals.
+    """
+    stub = r'{t0:%Y-%m-%d}-{dt:03d}-pcap-histories.csv'
+    for index, row in frame.iterrows():
+        _kwargs = dict(t0=row['t0'], dt=row['dt'], stub=stub, force=force)
+        yield scraper.apis.pcap.HistoriesScraper.export(**_kwargs, debug=False).frame
+
+
 # noinspection DuplicatedCode
 def get_arguments() -> argparse.Namespace:
     """
@@ -118,6 +128,10 @@ def main(force: bool, start: datetime.datetime, frequency: str):
         'M': lambda: months_of_year(start.year),
     }[frequency]()
 
+    logging.debug('\n%s', frame)
+
+    frame = pd.concat(get_histories(frame, force=force), ignore_index=True)
+    frame = frame.sort_values(by=['accountName', 't0'])
     logging.debug('\n%s', frame)
 
 
