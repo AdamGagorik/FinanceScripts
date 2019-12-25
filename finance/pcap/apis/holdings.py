@@ -5,11 +5,11 @@ import dataclasses
 import requests
 
 
-import scraper.base
+import finance.base
 
 
 @dataclasses.dataclass()
-class Holding(scraper.base.ObjectMapping):
+class Holding(finance.base.ObjectMapping):
     """
     An object with holding data.
     """
@@ -22,7 +22,7 @@ class Holding(scraper.base.ObjectMapping):
     userAccountId: int = -1
 
 
-class HoldingsScraper(scraper.base.PCAPScraper):
+class HoldingsScraper(finance.base.PCAPScraper):
     """
     Scrape the holdings data from personal capital.
     """

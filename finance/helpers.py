@@ -6,7 +6,7 @@ import logging
 import typing
 
 
-import scraper.config
+import finance.config
 
 
 def run(main: typing.Callable, args: typing.Callable, exiting: bool = True) -> int:
@@ -25,8 +25,8 @@ def run(main: typing.Callable, args: typing.Callable, exiting: bool = True) -> i
 
     # noinspection PyBroadException
     try:
-        scraper.config.logging()
-        scraper.config.pandas()
+        finance.config.logging()
+        finance.config.pandas()
         main(**args().__dict__)
     except Exception:
         logging.exception('caught unhandled exception!')

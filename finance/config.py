@@ -1,5 +1,5 @@
 """
-The scraper configuration.
+The finance configuration.
 """
 import dataclasses
 import datetime
@@ -17,7 +17,7 @@ def nowtime() -> datetime.datetime:
 @dataclasses.dataclass()
 class BaseConfig:
     """
-    The scraper configuration.
+    The finance configuration.
     """
     #: The working directory
     workdir: str = dataclasses.field(default_factory=lambda: os.getcwd())
@@ -47,7 +47,7 @@ class BaseConfig:
 @dataclasses.dataclass()
 class PCAPConfig(BaseConfig):
     """
-    The scraper configuration for Personal Capital.
+    The finance configuration for Personal Capital.
     """
     #: The path to the personal capital session cookie
     cookies: str = dataclasses.field(init=False, default='session.json')
@@ -74,7 +74,7 @@ class PCAPConfig(BaseConfig):
 @dataclasses.dataclass()
 class YNABConfig(BaseConfig):
     """
-    The scraper configuration for YNAB.
+    The finance configuration for YNAB.
     """
     @property
     def ynab_apikey(self) -> str:

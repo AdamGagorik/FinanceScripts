@@ -5,18 +5,18 @@ import dataclasses
 import requests
 
 
-import scraper.base
+import finance.base
 
 
 @dataclasses.dataclass()
-class Account(scraper.base.ObjectMapping):
+class Account(finance.base.ObjectMapping):
     """
     An object with account data.
     """
     userAccountId: str = ''
 
 
-class AccountsScraper(scraper.base.PCAPScraper):
+class AccountsScraper(finance.base.PCAPScraper):
     """
     Scrape the accounts data from personal capital.
     """

@@ -6,8 +6,8 @@ import argparse
 import logging
 
 
-import scraper.apis
-import scraper.helpers
+import finance.apis
+import finance.helpers
 
 
 # noinspection DuplicatedCode
@@ -29,8 +29,8 @@ def main(stub: str, year: int, freq: str, force: bool):
     """
     try:
         frame: pd.DataFrame = {
-            'w': scraper.apis.pcap.histories.frame_for_each_week_in,
-            'm': scraper.apis.pcap.histories.frame_for_each_month_in,
+            'w': finance.apis.pcap.histories.frame_for_each_week_in,
+            'm': finance.apis.pcap.histories.frame_for_each_month_in,
         }[freq](stub=stub, year=year, force=force)
     except KeyError:
         raise NotImplementedError(freq) from None
@@ -39,8 +39,14 @@ def main(stub: str, year: int, freq: str, force: bool):
     formatters = {col: lambda value: f'{value:<25}' for col in frame.columns if frame.dtypes[col] == object}
     for account, histories in frame.groupby(by='accountName'):
         histories = histories[[col for col in histories.columns if col not in ['accountName', 'userAccountId']]]
+        ynabframe = pd.DataFrame({
+            'Date': histories['t1'], 'Payee': 'Market', 'Memo': '',
+            'Amount': histories['dateRangePerformanceValueChange']
+        })
         logging.debug('\n%s\n\n%s', account, histories.to_string(formatters=formatters, index=False, index_names=False))
+        logging.debug('\n%s\n\n%s', account, ynabframe.to_string(formatters=formatters, index=False, index_names=False))
+        logging.debug('\ntotal %12.2f', ynabframe.Amount.sum())
 
 
 if __name__ == '__main__':
-    scraper.helpers.run(main, get_arguments)
+    finance.helpers.run(main, get_arguments)

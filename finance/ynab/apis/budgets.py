@@ -3,16 +3,16 @@ import pandas as pd
 import dataclasses
 
 
-import scraper.base
+import finance.base
 
 
 @dataclasses.dataclass()
-class Budget(scraper.base.ObjectMapping):
+class Budget(finance.base.ObjectMapping):
     id: str = ''
     name: str = ''
 
 
-class BudgetsScraper(scraper.base.YNABScraper):
+class BudgetsScraper(finance.base.YNABScraper):
     __reload_yaml__: str = '{dt:%Y-%m-%d}-ynab-budgets.yaml'
     __fillna_yaml__: str = 'fillna-ynab-budgets.yaml'
     __store_class__: type = Budget

@@ -2,14 +2,14 @@ import ynab_api as ynab
 import dataclasses
 
 
-import scraper.base
+import finance.base
 
 
 from .budgets import resolve_budget_id
 
 
 @dataclasses.dataclass()
-class Account(scraper.base.ObjectMapping):
+class Account(finance.base.ObjectMapping):
     id: str = ''
     name: str = ''
     type: str = ''
@@ -23,7 +23,7 @@ class Account(scraper.base.ObjectMapping):
     on_budget: bool = True
 
 
-class AccountsScraper(scraper.base.YNABScraper):
+class AccountsScraper(finance.base.YNABScraper):
     __reload_yaml__: str = '{dt:%Y-%m-%d}-ynab-accounts-{self.budget_id}.yaml'
     __fillna_yaml__: str = 'ynab-accounts-fillna.yaml'
     __store_class__: type = Account

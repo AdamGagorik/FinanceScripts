@@ -6,11 +6,11 @@ import datetime
 import requests
 
 
-import scraper.base
+import finance.base
 
 
 @dataclasses.dataclass()
-class Transaction(scraper.base.ObjectMapping):
+class Transaction(finance.base.ObjectMapping):
     """
     An object with transaction data.
     """
@@ -25,7 +25,7 @@ class Transaction(scraper.base.ObjectMapping):
             datetime.datetime.strptime(self.transactionDate, '%Y-%m-%d')
 
 
-class TransactionsScraper(scraper.base.PCAPScraper):
+class TransactionsScraper(finance.base.PCAPScraper):
     """
     Scrape the transactions data from personal capital.
     """

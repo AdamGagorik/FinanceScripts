@@ -10,11 +10,11 @@ import logging
 import typing
 
 
-import scraper.base
+import finance.base
 
 
 @dataclasses.dataclass()
-class History(scraper.base.ObjectMapping):
+class History(finance.base.ObjectMapping):
     """
     An object with history data.
     """
@@ -31,7 +31,7 @@ class History(scraper.base.ObjectMapping):
     dt: int = 0
 
 
-class HistoriesScraper(scraper.base.PCAPScraper):
+class HistoriesScraper(finance.base.PCAPScraper):
     """
     Scrape the historiess data from personal capital.
     """
@@ -108,11 +108,11 @@ def frame_for_each_week_in(**kwargs) -> pd.DataFrame:
     """
     Fetch the histories for each week in the given year.
     """
-    return pd.concat(scraper.pcap.apis.histories.for_each_week_in(**kwargs), ignore_index=True)
+    return pd.concat(finance.pcap.apis.histories.for_each_week_in(**kwargs), ignore_index=True)
 
 
 def frame_for_each_month_in(**kwargs) -> pd.DataFrame:
     """
     Fetch the histories for each month in the given year.
     """
-    return pd.concat(scraper.pcap.apis.histories.for_each_month_in(**kwargs), ignore_index=True)
+    return pd.concat(finance.pcap.apis.histories.for_each_month_in(**kwargs), ignore_index=True)

@@ -11,11 +11,11 @@ import logging
 import typing
 
 
-import scraper.apis
-import scraper.helpers
+import finance.apis
+import finance.helpers
 
 
-from scraper.helpers import yyyy_mm_dd
+from finance.helpers import yyyy_mm_dd
 
 
 def make_frame(samples: pd.Series) -> pd.DataFrame:
@@ -100,7 +100,7 @@ def get_histories(frame: pd.DataFrame, force: bool) -> typing.Generator[pd.DataF
     stub = r'{t0:%Y-%m-%d}-{dt:03d}-pcap-histories.csv'
     for index, row in frame.iterrows():
         _kwargs = dict(t0=row['t0'], dt=row['dt'], stub=stub, force=force)
-        yield scraper.apis.pcap.HistoriesScraper.export(**_kwargs, debug=False).frame
+        yield finance.apis.pcap.HistoriesScraper.export(**_kwargs, debug=False).frame
 
 
 # noinspection DuplicatedCode
@@ -134,6 +134,10 @@ def main(force: bool, start: datetime.datetime, frequency: str):
     frame = frame.sort_values(by=['accountName', 't0'])
     logging.debug('\n%s', frame)
 
+    for accountName, accountData in frame.groupby(by='accountName'):
+        rowsum = pd.DataFrame([accountData.select_dtypes('number').agg('sum')]).set_value(0, 'accountName', 'sum')
+        logging.debug('%s\n%s\n', accountName, pd.concat([accountData, rowsum]))
+
 
 if __name__ == '__main__':
-    scraper.helpers.run(main, get_arguments)
+    finance.helpers.run(main, get_arguments)

@@ -42,31 +42,31 @@ import dataclasses
 import datetime
 
 
-import scraper.handler
-import scraper.apis
+import finance.handler
+import finance.apis
 
 
 if __name__ == '__main__':
     # create API handler instance
-    handler = scraper.handler.PCAPHandler()
+    handler = finance.handler.PCAPHandler()
     
     # fetch all account objects
-    accounts = scraper.apis.pcap.AccountsScraper(handler)
+    accounts = finance.apis.pcap.AccountsScraper(handler)
     for account in accounts:
         print(account)
     
     # fetch all holding objects
-    holdings = scraper.apis.pcap.HoldingsScraper(handler)
+    holdings = finance.apis.pcap.HoldingsScraper(handler)
     for holding in holdings:
         print(holding)
 
     # fetch all history objects
-    histories = scraper.apis.pcap.HistoriesScraper(handler, t0=datetime.datetime.now(), dt=1)
+    histories = finance.apis.pcap.HistoriesScraper(handler, t0=datetime.datetime.now(), dt=1)
     for history in histories:
         print(history)
 
     # fetch all transaction objects
-    transactions = scraper.apis.pcap.TransactionsScraper(handler, t0=datetime.datetime.now(), dt=1)
+    transactions = finance.apis.pcap.TransactionsScraper(handler, t0=datetime.datetime.now(), dt=1)
     for transaction in transactions:
         print(transaction)
 

@@ -14,9 +14,9 @@ from personalcapital import PersonalCapital
 import ynab_api as ynab
 
 
-from scraper.config import BaseConfig
-from scraper.config import YNABConfig
-from scraper.config import PCAPConfig
+from finance.config import BaseConfig
+from finance.config import YNABConfig
+from finance.config import PCAPConfig
 
 
 class BaseHandler:
@@ -26,7 +26,7 @@ class BaseHandler:
     __config_class__ = BaseConfig
 
     def __init__(self, config=None):
-        #: The scraper config instance
+        #: The finance config instance
         self.config = config if config is not None else self.__config_class__()
 
 

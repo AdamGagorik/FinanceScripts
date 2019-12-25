@@ -11,9 +11,9 @@ import yaml
 import os
 
 
-from scraper.handler import BaseHandler
-from scraper.handler import YNABHandler
-from scraper.handler import PCAPHandler
+from finance.handler import BaseHandler
+from finance.handler import YNABHandler
+from finance.handler import PCAPHandler
 
 
 # noinspection PyArgumentList
@@ -93,8 +93,8 @@ class BaseScraper:
     """
     A base class that can preform API calls or reload data using a handler.
     """
-    __reload_yaml__: str = '{dt:%Y-%m-%d}-scraper.yaml'
-    __fillna_yaml__: str = 'fillna-scraper.yaml'
+    __reload_yaml__: str = '{dt:%Y-%m-%d}-finance.yaml'
+    __fillna_yaml__: str = 'fillna-finance.yaml'
     __api_handler__: typing.Callable = BaseHandler
     __store_class__: ObjectMapping = ObjectMapping
 
@@ -225,8 +225,8 @@ class PCAPScraper(BaseScraper):
     """
     A base class that can preform API calls or reload data using a PCAP handler.
     """
-    __reload_yaml__: str = '{dt:%Y-%m-%d}-scraper.yaml'
-    __fillna_yaml__: str = 'fillna-scraper.yaml'
+    __reload_yaml__: str = '{dt:%Y-%m-%d}-finance.yaml'
+    __fillna_yaml__: str = 'fillna-finance.yaml'
     __api_handler__: typing.Callable = PCAPHandler
     __store_class__: ObjectMapping = ObjectMapping
 
@@ -248,8 +248,8 @@ class YNABScraper(BaseScraper):
     """
     A base class that can preform API calls or reload data using a YNAB handler.
     """
-    __reload_yaml__: str = '{dt:%Y-%m-%d}-scraper.yaml'
-    __fillna_yaml__: str = 'fillna-scraper.yaml'
+    __reload_yaml__: str = '{dt:%Y-%m-%d}-finance.yaml'
+    __fillna_yaml__: str = 'fillna-finance.yaml'
     __api_handler__: typing.Callable = YNABHandler
     __store_class__: ObjectMapping = ObjectMapping
 
