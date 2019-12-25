@@ -79,6 +79,19 @@ conda activate FinanceScripts
 python -m scraper.apps.pcap.marketvalue --start 2019-12-01 --freq W
 ```
 
+For example, the following frame will be produced.
+
+```bash
+Vanguard : Roth IRA
+                                   Date   Payee Memo  Amount
+0      2019-12-01 23:59:59.999999+00:00  Market       123.45
+1      2019-12-08 23:59:59.999999+00:00  Market       678.90
+2      2019-12-15 23:59:59.999999+00:00  Market       123.45
+3      2019-12-22 23:59:59.999999+00:00  Market       678.90
+4      2019-12-29 23:59:59.999999+00:00  Market       123.45
+Total                                                1728.15
+```
+
 Filling Logic
 =============
 
