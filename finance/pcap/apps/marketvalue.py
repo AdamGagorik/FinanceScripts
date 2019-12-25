@@ -113,11 +113,33 @@ def get_arguments() -> argparse.Namespace:
     parser.add_argument('--force', action='store_true', help='force redownload?')
     parser.add_argument('--start', default=start, type=yyyy_mm_dd, help='The starting YYYY/MM/DD of the sample')
     parser.add_argument('--frequency', default='W', type=str, choices=['D', 'W', 'M'], help='The sampling frequency')
+    parser.add_argument('--ynabframe', action='store_true', help='reformace the dataframe for YNAB import CSV files')
 
     return parser.parse_args()
 
 
-def main(force: bool, start: datetime.datetime, frequency: str):
+def add_rowsum(frame):
+    """
+    Add a totals row to the frame.
+    """
+    rowsum = pd.DataFrame([frame.select_dtypes('number').agg('sum')])
+    rowsum.index = ['Total']
+
+    rowsum = pd.concat([frame.reset_index(drop=True), rowsum], sort=False)
+    rowsum = rowsum.fillna('')
+
+    return rowsum
+
+
+def debug_dataframe(name, frame):
+    """
+    Format the dataframe and debug it to the logger.
+    """
+    frame = frame.to_string(formatters={'accountName': lambda value: f'{value:>25}'}, float_format='%.2f')
+    logging.debug('\n%s\n%s', name, frame)
+
+
+def main(force: bool, start: datetime.datetime, frequency: str, ynabframe: bool):
     """
     A script to download the market value for an account.
     """
@@ -132,11 +154,15 @@ def main(force: bool, start: datetime.datetime, frequency: str):
     frame = pd.concat(get_histories(frame, force=force), ignore_index=True)
     frame = frame.sort_values(by=['accountName', 't0'])
 
-    for accountName, accountData in frame.groupby(by='accountName'):
-        rowsum = pd.DataFrame([accountData.select_dtypes('number').agg('sum')])
-        rowsum['accountName'] = 'Total'
-        logging.debug('\n%s', pd.concat([accountData, rowsum], sort=False).reset_index(drop=True)
-                      .to_string(formatters={'accountName': lambda value: f'{value:>25}'}, float_format='%.2f'))
+    for account_name, account_data in frame.groupby(by='accountName'):
+        if ynabframe:
+            account_data = pd.DataFrame({
+                'Date': account_data['t1'], 'Payee': 'Market',
+                'Memo': '', 'Amount': account_data['dateRangePerformanceValueChange']
+            })
+
+        account_data = add_rowsum(account_data)
+        debug_dataframe(account_name, account_data)
 
 
 if __name__ == '__main__':
