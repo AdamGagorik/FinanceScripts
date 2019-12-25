@@ -9,6 +9,13 @@ import typing
 import finance.config
 
 
+def yyyy_mm_dd(v: str) -> datetime.datetime:
+    """
+    Convert argparse string to datetime.
+    """
+    return datetime.datetime.strptime(v, '%Y-%m-%d')
+
+
 def run(main: typing.Callable, args: typing.Callable, exiting: bool = True) -> int:
     """
     A helper method to execute the main function of a script.
@@ -36,10 +43,3 @@ def run(main: typing.Callable, args: typing.Callable, exiting: bool = True) -> i
         exit(exitcode)
     else:
         return exitcode
-
-
-def yyyy_mm_dd(v: str) -> datetime.datetime:
-    """
-    Convert argparse string to datetime.
-    """
-    return datetime.datetime.strptime(v, '%Y-%m-%d')

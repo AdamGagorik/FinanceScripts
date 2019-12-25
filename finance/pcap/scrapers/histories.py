@@ -10,11 +10,14 @@ import logging
 import typing
 
 
-import finance.base
+import finance.scraper
+import finance.objmap
+import finance.pcap.api
+import finance.pcap.scraper
 
 
 @dataclasses.dataclass()
-class History(finance.base.ObjectMapping):
+class History(finance.objmap.ObjectMapping):
     """
     An object with history data.
     """
@@ -31,7 +34,7 @@ class History(finance.base.ObjectMapping):
     dt: int = 0
 
 
-class HistoriesScraper(finance.base.PCAPScraper):
+class HistoriesScraper(finance.pcap.scraper.PCAPScraper):
     """
     Scrape the historiess data from personal capital.
     """
@@ -60,7 +63,7 @@ class HistoriesScraper(finance.base.PCAPScraper):
         payload: dict = {
             'startDate': self.t0.strftime('%Y-%m-%d'), 'endDate': self.t1.strftime('%Y-%m-%d'),
         }
-        data: requests.Response = self.handler.pc.fetch('/account/getHistories', data=payload)
+        data: requests.Response = self.handler.client.fetch('/account/getHistories', data=payload)
 
         data: dict = data.json()
         data: list = data.get('spData', {}).get('accountSummaries', [])
@@ -108,11 +111,11 @@ def frame_for_each_week_in(**kwargs) -> pd.DataFrame:
     """
     Fetch the histories for each week in the given year.
     """
-    return pd.concat(finance.pcap.apis.histories.for_each_week_in(**kwargs), ignore_index=True)
+    return pd.concat(finance.pcap.scrapers.histories.for_each_week_in(**kwargs), ignore_index=True)
 
 
 def frame_for_each_month_in(**kwargs) -> pd.DataFrame:
     """
     Fetch the histories for each month in the given year.
     """
-    return pd.concat(finance.pcap.apis.histories.for_each_month_in(**kwargs), ignore_index=True)
+    return pd.concat(finance.pcap.scrapers.histories.for_each_month_in(**kwargs), ignore_index=True)

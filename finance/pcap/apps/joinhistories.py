@@ -6,7 +6,7 @@ import argparse
 import logging
 
 
-import finance.apis
+import finance.scrapers
 import finance.helpers
 
 
@@ -29,8 +29,8 @@ def main(stub: str, year: int, freq: str, force: bool):
     """
     try:
         frame: pd.DataFrame = {
-            'w': finance.apis.pcap.histories.frame_for_each_week_in,
-            'm': finance.apis.pcap.histories.frame_for_each_month_in,
+            'w': finance.scrapers.pcap.histories.frame_for_each_week_in,
+            'm': finance.scrapers.pcap.histories.frame_for_each_month_in,
         }[freq](stub=stub, year=year, force=force)
     except KeyError:
         raise NotImplementedError(freq) from None

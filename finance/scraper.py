@@ -1,97 +1,22 @@
 """
-A script to play with the personal capital api.
+Download and cache files from a REST API.
 """
 import pandas as pd
 import dataclasses
 import functools
 import logging
-import inspect
 import typing
 import yaml
 import os
 
 
-from finance.handler import BaseHandler
-from finance.handler import YNABHandler
-from finance.handler import PCAPHandler
-
-
-# noinspection PyArgumentList
-@dataclasses.dataclass()
-class ObjectMapping:
-    """
-    A base class to aid in creating objects from JSON.
-    """
-    @classmethod
-    def safe_init(cls, instance: typing.Any, **kwargs) -> 'ObjectMapping':
-        """
-        Create an object from the keyword arguments.
-        Silently ignore any keyword arguments that are not known.
-        """
-        skwargs = {}
-        for name in inspect.signature(cls).parameters:
-            try:
-                skwargs[name] = kwargs[name]
-            except KeyError:
-                try:
-                    skwargs[name] = getattr(instance, name)
-                except AttributeError:
-                    pass
-
-        return cls(**skwargs)
-
-    def fillna(self, rules: typing.List[typing.MutableMapping]) -> 'ObjectMapping':
-        """
-        Fill in missing values based on the list of rules.
-
-        The rules is a list of of `where` and `value` mappings.
-        An update occurs when all instance variables match the `where` items.
-        The items from the `values` mapping are used when the update step occurs.
-
-        Parameters:
-            rules: A list of rule mappings.
-
-        Returns:
-            The updated instance with missing values filled in based on the rules.
-        """
-        for i, rule in enumerate(rules):
-            if self._matches(**rule['where']):
-                self._update(**rule['value'])
-                rules.pop(i)
-                break
-
-        return self
-
-    def _matches(self, **kwargs) -> bool:
-        """
-        Check to see if key-value pair matches.
-
-        Returns:
-            True if all items match.
-        """
-        if not kwargs:
-            return False
-
-        for k, v in kwargs.items():
-            if getattr(self, k) != v:
-                return False
-
-        return True
-
-    def _update(self, **kwargs):
-        """
-        Update attributes using key-value pairs.
-        """
-        for k, v in kwargs.items():
-            if hasattr(self, k):
-                setattr(self, k, v)
-            else:
-                raise AttributeError(k)
+from finance.api import BaseHandler
+from finance.objmap import ObjectMapping
 
 
 class BaseScraper:
     """
-    A base class that can preform API calls or reload data using a handler.
+    Download and cache files from a REST API.
     """
     __reload_yaml__: str = '{dt:%Y-%m-%d}-finance.yaml'
     __fillna_yaml__: str = 'fillna-finance.yaml'
@@ -105,7 +30,7 @@ class BaseScraper:
             force: Use the API even if the store exists?
         """
         #: The personal capital api handler
-        handler = handler if handler is not None else self.__api_handler__()
+        handler = handler if handler is not None else self.__api_handler__(config=None)
         self._handler = handler
         #: The name of the file to store the API results in
         self.store: str = os.path.join(handler.config.workdir, self.__reload_yaml__)
@@ -212,56 +137,10 @@ class BaseScraper:
             debug: Log the dataframe to the screen?
             **kwargs: The key word arguments to the constructor.
         """
-        instance = cls(handler=cls.__api_handler__(), **kwargs)
+        instance = cls(handler=cls.__api_handler__(config=None), **kwargs)
         instance.frame.to_csv(stub.format(**kwargs, config=instance.handler.config), index=False)
         if debug:
             logging.debug('%s\n%s', cls.__name__, instance.frame)
             return instance
         else:
             return instance
-
-
-class PCAPScraper(BaseScraper):
-    """
-    A base class that can preform API calls or reload data using a PCAP handler.
-    """
-    __reload_yaml__: str = '{dt:%Y-%m-%d}-finance.yaml'
-    __fillna_yaml__: str = 'fillna-finance.yaml'
-    __api_handler__: typing.Callable = PCAPHandler
-    __store_class__: ObjectMapping = ObjectMapping
-
-    def fetch(self) -> list:
-        """
-        The logic of the API call.
-        """
-        raise NotImplementedError
-
-    @property
-    def handler(self) -> PCAPHandler:
-        """
-        Get the handler instance.
-        """
-        return self._handler
-
-
-class YNABScraper(BaseScraper):
-    """
-    A base class that can preform API calls or reload data using a YNAB handler.
-    """
-    __reload_yaml__: str = '{dt:%Y-%m-%d}-finance.yaml'
-    __fillna_yaml__: str = 'fillna-finance.yaml'
-    __api_handler__: typing.Callable = YNABHandler
-    __store_class__: ObjectMapping = ObjectMapping
-
-    def fetch(self) -> list:
-        """
-        The logic of the API call.
-        """
-        raise NotImplementedError
-
-    @property
-    def handler(self) -> YNABHandler:
-        """
-        Get the handler instance.
-        """
-        return self._handler

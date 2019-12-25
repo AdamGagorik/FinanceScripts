@@ -5,11 +5,14 @@ import dataclasses
 import requests
 
 
-import finance.base
+import finance.scraper
+import finance.objmap
+import finance.pcap.api
+import finance.pcap.scraper
 
 
 @dataclasses.dataclass()
-class Holding(finance.base.ObjectMapping):
+class Holding(finance.objmap.ObjectMapping):
     """
     An object with holding data.
     """
@@ -22,7 +25,7 @@ class Holding(finance.base.ObjectMapping):
     userAccountId: int = -1
 
 
-class HoldingsScraper(finance.base.PCAPScraper):
+class HoldingsScraper(finance.pcap.scraper.PCAPScraper):
     """
     Scrape the holdings data from personal capital.
     """
@@ -38,7 +41,7 @@ class HoldingsScraper(finance.base.PCAPScraper):
             THe json dictionary.
         """
         payload: dict = {}
-        data: requests.Response = self.handler.pc.fetch('/invest/getHoldings', data=payload)
+        data: requests.Response = self.handler.client.fetch('/invest/getHoldings', data=payload)
 
         data: dict = data.json()
         data: list = data.get('spData', {}).get('holdings', [])

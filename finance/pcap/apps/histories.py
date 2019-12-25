@@ -5,7 +5,7 @@ import datetime
 import argparse
 
 
-import finance.apis
+import finance.scrapers
 import finance.helpers
 
 
@@ -26,4 +26,4 @@ def get_arguments(args=None) -> argparse.Namespace:
 
 
 if __name__ == '__main__':
-    finance.helpers.run(finance.apis.pcap.HistoriesScraper.export, get_arguments)
+    finance.helpers.run(finance.scrapers.pcap.HistoriesScraper.export, get_arguments)

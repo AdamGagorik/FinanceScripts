@@ -11,7 +11,7 @@ import logging
 import typing
 
 
-import finance.apis
+import finance.scrapers
 import finance.helpers
 
 
@@ -48,9 +48,8 @@ def make_frame(samples: pd.Series) -> pd.DataFrame:
                 year=nt.year, month=nt.month, day=nt.day)
 
     frame['dt'] = (frame['t1'] - frame['t0']).dt.days
-    logging.debug('\n%s', frame)
 
-    return frame
+    return frame.reset_index(drop=True)
 
 
 def days_of_month(year: int, month: int) -> pd.DataFrame:
@@ -78,7 +77,7 @@ def weeks_of_month(year: int, month: int) -> pd.DataFrame:
     samples = make_frame(samples)
     samples = samples[samples['t1'].dt.month == month]
 
-    return samples
+    return samples.reset_index(drop=True)
 
 
 def months_of_year(year: int) -> pd.DataFrame:
@@ -100,7 +99,7 @@ def get_histories(frame: pd.DataFrame, force: bool) -> typing.Generator[pd.DataF
     stub = r'{t0:%Y-%m-%d}-{dt:03d}-pcap-histories.csv'
     for index, row in frame.iterrows():
         _kwargs = dict(t0=row['t0'], dt=row['dt'], stub=stub, force=force)
-        yield finance.apis.pcap.HistoriesScraper.export(**_kwargs, debug=False).frame
+        yield finance.scrapers.pcap.HistoriesScraper.export(**_kwargs, debug=False).frame
 
 
 # noinspection DuplicatedCode
@@ -132,11 +131,12 @@ def main(force: bool, start: datetime.datetime, frequency: str):
 
     frame = pd.concat(get_histories(frame, force=force), ignore_index=True)
     frame = frame.sort_values(by=['accountName', 't0'])
-    logging.debug('\n%s', frame)
 
     for accountName, accountData in frame.groupby(by='accountName'):
-        rowsum = pd.DataFrame([accountData.select_dtypes('number').agg('sum')]).set_value(0, 'accountName', 'sum')
-        logging.debug('%s\n%s\n', accountName, pd.concat([accountData, rowsum]))
+        rowsum = pd.DataFrame([accountData.select_dtypes('number').agg('sum')])
+        rowsum['accountName'] = 'Total'
+        logging.debug('\n%s', pd.concat([accountData, rowsum], sort=False).reset_index(drop=True)
+                      .to_string(formatters={'accountName': lambda value: f'{value:>25}'}, float_format='%.2f'))
 
 
 if __name__ == '__main__':

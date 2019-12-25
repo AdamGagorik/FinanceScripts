@@ -5,18 +5,21 @@ import dataclasses
 import requests
 
 
-import finance.base
+import finance.scraper
+import finance.objmap
+import finance.pcap.api
+import finance.pcap.scraper
 
 
 @dataclasses.dataclass()
-class Account(finance.base.ObjectMapping):
+class Account(finance.objmap.ObjectMapping):
     """
     An object with account data.
     """
     userAccountId: str = ''
 
 
-class AccountsScraper(finance.base.PCAPScraper):
+class AccountsScraper(finance.pcap.scraper.PCAPScraper):
     """
     Scrape the accounts data from personal capital.
     """
@@ -32,7 +35,7 @@ class AccountsScraper(finance.base.PCAPScraper):
             The json dictionary.
         """
         payload: dict = {}
-        data: requests.Response = self.handler.pc.fetch('/newaccount/getAccounts2', data=payload)
+        data: requests.Response = self.handler.client.fetch('/newaccount/getAccounts2', data=payload)
 
         data: dict = data.json()
         data: list = data.get('spData', {}).get('accounts', [])

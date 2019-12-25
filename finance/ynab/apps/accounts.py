@@ -4,7 +4,7 @@ A script to save an account CSV.
 import argparse
 
 
-import finance.apis
+import finance.scrapers
 import finance.helpers
 
 
@@ -18,4 +18,4 @@ def get_arguments(args=None) -> argparse.Namespace:
 
 
 if __name__ == '__main__':
-    finance.helpers.run(finance.apis.ynab.AccountsScraper.export, get_arguments)
+    finance.helpers.run(finance.scrapers.ynab.AccountsScraper.export, get_arguments)

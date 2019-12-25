@@ -4,7 +4,7 @@ A script to save a holdings CSV for the current date.
 import argparse
 
 
-import finance.apis
+import finance.scrapers
 import finance.helpers
 
 
@@ -20,4 +20,4 @@ def get_arguments() -> argparse.Namespace:
 
 
 if __name__ == '__main__':
-    finance.helpers.run(finance.apis.pcap.HoldingsScraper.export, get_arguments)
+    finance.helpers.run(finance.scrapers.pcap.HoldingsScraper.export, get_arguments)

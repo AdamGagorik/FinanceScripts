@@ -6,11 +6,14 @@ import datetime
 import requests
 
 
-import finance.base
+import finance.scraper
+import finance.objmap
+import finance.pcap.api
+import finance.pcap.scraper
 
 
 @dataclasses.dataclass()
-class Transaction(finance.base.ObjectMapping):
+class Transaction(finance.objmap.ObjectMapping):
     """
     An object with transaction data.
     """
@@ -25,7 +28,7 @@ class Transaction(finance.base.ObjectMapping):
             datetime.datetime.strptime(self.transactionDate, '%Y-%m-%d')
 
 
-class TransactionsScraper(finance.base.PCAPScraper):
+class TransactionsScraper(finance.pcap.scraper.PCAPScraper):
     """
     Scrape the transactions data from personal capital.
     """
@@ -56,7 +59,7 @@ class TransactionsScraper(finance.base.PCAPScraper):
             'page': 0, 'rows_per_page': 4096, 'component': 'DATAGRID',
             'sort_cols': 'transactionTime', 'sort_rev': 'true',
         }
-        data: requests.Response = self.handler.pc.fetch('/transaction/getUserTransactions', data=payload)
+        data: requests.Response = self.handler.client.fetch('/transaction/getUserTransactions', data=payload)
 
         data: dict = data.json()
         data: list = data.get('spData', {}).get('transactions', [])
