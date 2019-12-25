@@ -8,6 +8,7 @@ import calendar
 import argparse
 import datetime
 import logging
+import typing
 
 
 import scraper.apis
@@ -17,7 +18,7 @@ import scraper.helpers
 from scraper.helpers import yyyy_mm_dd
 
 
-def make_frame(samples: pd.Series):
+def make_frame(samples: pd.Series) -> pd.DataFrame:
     """
     Given the endpoints of a date range, create an a dataframe of intervals [t0, t1, dt].
     """
