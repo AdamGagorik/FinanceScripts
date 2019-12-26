@@ -15,6 +15,7 @@ import os
 
 import finance.scrapers
 import finance.helpers
+import finance.apis
 
 
 from finance.helpers import yyyy_mm_dd
@@ -98,26 +99,10 @@ def get_histories(frame: pd.DataFrame, force: bool) -> typing.Generator[pd.DataF
     """
     Fetch the histories in the given intervals.
     """
-    stub = r'{t0:%Y-%m-%d}-{dt:03d}-pcap-histories.csv'
+    handler = finance.apis.pcap.PCAPHandler()
     for index, row in frame.iterrows():
-        _kwargs = dict(t0=row['t0'], dt=row['dt'], stub=stub, force=force)
-        yield finance.scrapers.pcap.HistoriesScraper.export(**_kwargs, debug=False).frame
-
-
-# noinspection DuplicatedCode
-def get_arguments() -> argparse.Namespace:
-    """
-    Get the command line arguments.
-    """
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-
-    start = datetime.datetime.now(tz=datetime.timezone.utc)
-    parser.add_argument('--force', action='store_true', help='force redownload?')
-    parser.add_argument('--start', default=start, type=yyyy_mm_dd, help='The starting YYYY/MM/DD of the sample')
-    parser.add_argument('--frequency', default='W', type=str, choices=['D', 'W', 'M'], help='The sampling frequency')
-    parser.add_argument('--ynabframe', action='store_true', help='reformace the dataframe for YNAB import CSV files')
-
-    return parser.parse_args()
+        _kwargs = dict(handler=handler, t0=row['t0'], dt=row['dt'], force=force)
+        yield finance.scrapers.pcap.HistoriesScraper(**_kwargs).frame
 
 
 def add_rowsum(frame):
@@ -139,6 +124,22 @@ def debug_dataframe(name, frame):
     """
     frame = frame.to_string(formatters={'accountName': lambda value: f'{value:>25}'}, float_format='%.2f')
     logging.debug('\n%s\n%s', name, frame)
+
+
+# noinspection DuplicatedCode
+def get_arguments() -> argparse.Namespace:
+    """
+    Get the command line arguments.
+    """
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+
+    start = datetime.datetime.now(tz=datetime.timezone.utc)
+    parser.add_argument('--force', action='store_true', help='force redownload?')
+    parser.add_argument('--start', default=start, type=yyyy_mm_dd, help='The starting YYYY/MM/DD of the sample')
+    parser.add_argument('--frequency', default='W', type=str, choices=['D', 'W', 'M'], help='The sampling frequency')
+    parser.add_argument('--ynabframe', action='store_true', help='reformace the dataframe for YNAB import CSV files')
+
+    return parser.parse_args()
 
 
 def main(force: bool, start: datetime.datetime, frequency: str, ynabframe: bool):
