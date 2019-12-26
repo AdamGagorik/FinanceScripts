@@ -9,6 +9,8 @@ import argparse
 import datetime
 import logging
 import typing
+import re
+import os
 
 
 import finance.scrapers
@@ -52,7 +54,7 @@ def make_frame(samples: pd.Series) -> pd.DataFrame:
     return frame.reset_index(drop=True)
 
 
-def days_of_month(year: int, month: int) -> pd.DataFrame:
+def days_of_month(year: int, month: int) -> typing.Tuple[str, pd.DataFrame]:
     """
     Create a dataframe with samples [t0, t1, dt] for each day in a given month, of a given year.
     """
@@ -62,10 +64,10 @@ def days_of_month(year: int, month: int) -> pd.DataFrame:
     samples = pd.date_range(start=start, periods=periods + 1, freq='D', normalize=False, tz=datetime.timezone.utc)
     samples = samples - datetime.timedelta(microseconds=1)
 
-    return make_frame(samples)
+    return r'export/{time:%Y-%m-01}-D-{name}.csv', make_frame(samples)
 
 
-def weeks_of_month(year: int, month: int) -> pd.DataFrame:
+def weeks_of_month(year: int, month: int) -> typing.Tuple[str, pd.DataFrame]:
     """
     Create a dataframe with samples [t0, t1, dt] for each week in a given month, of a given year.
     """
@@ -77,10 +79,10 @@ def weeks_of_month(year: int, month: int) -> pd.DataFrame:
     samples = make_frame(samples)
     samples = samples[samples['t1'].dt.month == month]
 
-    return samples.reset_index(drop=True)
+    return r'export/{time:%Y-%m-01}-W-{name}.csv', samples.reset_index(drop=True)
 
 
-def months_of_year(year: int) -> pd.DataFrame:
+def months_of_year(year: int) -> typing.Tuple[str, pd.DataFrame]:
     """
     Create a dataframe with samples [t0, t1, dt] for month in a given year.
     """
@@ -89,7 +91,7 @@ def months_of_year(year: int) -> pd.DataFrame:
     samples = pd.date_range(start=start, periods=13, freq='MS', normalize=False, tz=datetime.timezone.utc)
     samples = samples - datetime.timedelta(microseconds=1)
 
-    return make_frame(samples)
+    return r'export/{time:%Y-01-01}-M-{name}.csv', make_frame(samples)
 
 
 def get_histories(frame: pd.DataFrame, force: bool) -> typing.Generator[pd.DataFrame, None, None]:
@@ -143,7 +145,7 @@ def main(force: bool, start: datetime.datetime, frequency: str, ynabframe: bool)
     """
     A script to download the market value for an account.
     """
-    frame: pd.DataFrame = {
+    stub, frame = {
         'D': lambda: days_of_month(start.year, start.month),
         'W': lambda: weeks_of_month(start.year, start.month),
         'M': lambda: months_of_year(start.year),
@@ -160,6 +162,13 @@ def main(force: bool, start: datetime.datetime, frequency: str, ynabframe: bool)
                 'Date': account_data['t1'], 'Payee': 'Market',
                 'Memo': '', 'Amount': account_data['dateRangePerformanceValueChange']
             })
+
+            account_data = account_data.query('abs(Amount) > 0.0')
+            if not account_data.empty:
+                os.makedirs('export', exist_ok=True)
+                export_name = re.sub(r'[ :]+', '', account_name)
+                with open(stub.format(time=start, name=export_name), 'w') as stream:
+                    account_data.to_csv(stream, index=False)
 
         account_data = add_rowsum(account_data)
         debug_dataframe(account_name, account_data)
