@@ -9,6 +9,7 @@ import typing
 import yaml
 import os
 
+from pandas import DataFrame
 
 from finance.api import BaseHandler
 from finance.objmap import ObjectMapping
@@ -33,7 +34,7 @@ class BaseScraper:
         handler = handler if handler is not None else self.__api_handler__(config=None)
         self._handler = handler
         #: The name of the file to store the API results in
-        self.store: str = os.path.join(handler.config.workdir, self.__reload_yaml__)
+        self.store: str = os.path.join(handler.config.workdir, 'cache', self.__reload_yaml__)
         self.store: str = self.store.format(dt=handler.config.dt, self=self)
         #: The data that was fetched as json from the API call
         self._data: typing.Union[list, None] = None
@@ -68,6 +69,7 @@ class BaseScraper:
         """
         if self.force or not os.path.exists(self.store):
             self._data = self.fetch()
+            os.makedirs(os.path.dirname(self.store), exist_ok=True)
             with open(self.store, 'w') as stream:
                 yaml.dump(self.data, stream)
         else:
